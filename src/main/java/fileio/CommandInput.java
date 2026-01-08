@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
@@ -13,8 +13,11 @@ import java.util.List;
 public class CommandInput {
     private String command;
     private String username;
-    private String role;
-    private String email;
     private LocalDate timestamp;
+    private String name;
+    private LocalDate dueDate;
+    private ArrayList<String> blockingFor;
+    private ArrayList<Integer> tickets;
+    private ArrayList<String> assignedDevs;
     Params params;
 }

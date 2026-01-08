@@ -1,22 +1,19 @@
 package main;
 
+import Users.UsersFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Users.User;
-import commands.Invoker;
-import commands.ReportTicketCommand;
-import commands.ViewTicketsCommand;
+import commands.*;
 import fileio.CommandInput;
 import fileio.InputLoader;
 import fileio.UserInput;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * main.App represents the main application logic that processes input commands,
@@ -40,6 +37,8 @@ public class App {
      * @param outputPath path to the file where results should be written
      */
     public static void run(final String inputPath, final String outputPath) throws IOException {
+        AppCenter.resetInstance();
+
         // feel free to change this if needed
         // however keep 'outputs' variable name to be used for writing
         InputLoader inputLoader = new InputLoader(inputPath);
@@ -62,18 +61,27 @@ public class App {
         AppCenter appCenter = AppCenter.getInstance();
 
         for (UserInput userNode : usersLoader.getUsers()) {
-            String username = userNode.getUsername();
-            String email = userNode.getEmail();
-            String role = userNode.getRole();
-            User user = new User(username, email, role);
+            User user = UsersFactory.createByRole(
+                    userNode.getRole(),
+                    userNode.getUsername(),
+                    userNode.getEmail(),
+                    userNode.getHireDate(),
+                    userNode.getExpertiseArea(),
+                    userNode.getSeniority(),
+                    userNode.getBusinessPriority(),
+                    userNode.getSubordinates()
+            );
+
             appCenter.getUsers().add(user);
         }
+
         int index = 0;
         for (CommandInput command : inputLoader.getCommands()) {
-            ObjectNode commandNode;
             if (index++ == 0) {
                 appCenter.setDatePeriodStart(command.getTimestamp());
             }
+
+            ObjectNode commandNode;
             switch (command.getCommand()) {
                 case "reportTicket":
                     invoker.setCommand(new ReportTicketCommand());
@@ -86,6 +94,14 @@ public class App {
                 case "lostInvestors":
                     // TODO
                     commandNode = null;
+                    break;
+                case "createMilestone":
+                    invoker.setCommand(new CreateMilestoneCommand());
+                    commandNode = invoker.pressButton(MAPPER, command);
+                    break;
+                case "viewMilestones":
+                    invoker.setCommand(new ViewMilestonesCommand());
+                    commandNode = invoker.pressButton(MAPPER, command);
                     break;
                 default:
                     commandNode = MAPPER.createObjectNode();

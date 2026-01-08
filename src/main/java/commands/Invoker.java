@@ -18,7 +18,7 @@ public class Invoker {
 
     public ObjectNode pressButton(ObjectMapper mapper, CommandInput command) {
         AppCenter appCenter = AppCenter.getInstance();
-        appCenter.checkTransition(command.getTimestamp());
+        appCenter.updates(command.getTimestamp());
         return slot.execute(mapper, command);
     }
 }
