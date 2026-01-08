@@ -13,6 +13,8 @@ import java.util.List;
 public class CommandInput {
     private String command;
     private String username;
+    private String role;
+    private String email;
     private LocalDate timestamp;
     Params params;
 }

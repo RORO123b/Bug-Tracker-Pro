@@ -1,5 +1,7 @@
 package fileio;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import enums.*;
 import lombok.Data;
@@ -9,27 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class UserInput {
-    private int id;
-    private TicketType type;
-    private String title;
-    private BusinessPriority businessPriority;
-    private TicketStatus status;
+    private String username;
+    private String email;
+    private String role;
+
+    private String hireDate;
+    private List<String> subordinates;
+
     private ExpertiseArea expertiseArea;
-    private String description;
-    private String reportedBy;
-
-    private String expectedBehavior;
-    private String actualBehavior;
-    private Frequency frequency;
-    private Severity severity;
-    private String environment;
-    private Integer errorCode;
-
-    private BusinessValue businessValue;
-    private CustomerDemand customerDemand;
-
-    private String uiElementId;
-    private Integer usabilityScore;
-    private String screenshotUrl;
-    private String suggestedFix;
+    private String seniority;
+    private BusinessPriority businessPriority;
 }

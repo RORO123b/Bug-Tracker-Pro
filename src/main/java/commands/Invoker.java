@@ -3,6 +3,8 @@ package commands;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CommandInput;
+import main.App;
+import main.AppCenter;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -15,6 +17,8 @@ public class Invoker {
     }
 
     public ObjectNode pressButton(ObjectMapper mapper, CommandInput command) {
+        AppCenter appCenter = AppCenter.getInstance();
+        appCenter.checkTransition(command.getTimestamp());
         return slot.execute(mapper, command);
     }
 }

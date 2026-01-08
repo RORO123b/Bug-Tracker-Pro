@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import Users.User;
 import commands.Invoker;
 import commands.ReportTicketCommand;
 import commands.ViewTicketsCommand;
 import fileio.CommandInput;
 import fileio.InputLoader;
+import fileio.UserInput;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +43,7 @@ public class App {
         // feel free to change this if needed
         // however keep 'outputs' variable name to be used for writing
         InputLoader inputLoader = new InputLoader(inputPath);
+        InputLoader usersLoader = new InputLoader(INPUT_USERS_FIELD);
         ArrayNode outputs = MAPPER.createArrayNode();
 
         /*
@@ -52,12 +56,24 @@ public class App {
 
         // TODO 2: process commands.
 
-        // TODO 3: create objectnodes for output, add them to outputs list.
-        Invoker invoker = new Invoker();
+        // TODO 3: create objectnodes for output, add them to outputs list.\
 
+        Invoker invoker = new Invoker();
+        AppCenter appCenter = AppCenter.getInstance();
+
+        for (UserInput userNode : usersLoader.getUsers()) {
+            String username = userNode.getUsername();
+            String email = userNode.getEmail();
+            String role = userNode.getRole();
+            User user = new User(username, email, role);
+            appCenter.getUsers().add(user);
+        }
+        int index = 0;
         for (CommandInput command : inputLoader.getCommands()) {
             ObjectNode commandNode;
-
+            if (index++ == 0) {
+                appCenter.setDatePeriodStart(command.getTimestamp());
+            }
             switch (command.getCommand()) {
                 case "reportTicket":
                     invoker.setCommand(new ReportTicketCommand());
@@ -66,12 +82,19 @@ public class App {
                 case "viewTickets":
                     invoker.setCommand(new ViewTicketsCommand());
                     commandNode = invoker.pressButton(MAPPER, command);
+                    break;
+                case "lostInvestors":
+                    // TODO
+                    commandNode = null;
+                    break;
                 default:
                     commandNode = MAPPER.createObjectNode();
                     commandNode.put("command", command.getCommand());
                     break;
             }
-            outputs.add(commandNode);
+            if (commandNode != null) {
+                outputs.add(commandNode);
+            }
         }
         // DO NOT CHANGE THIS SECTION IN ANY WAY
         try {
