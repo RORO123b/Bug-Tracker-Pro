@@ -28,7 +28,6 @@ public final class Milestone {
     private LocalDate createdAt;
     private String createdBy;
     private String status;
-    private ArrayList<Repartition> repartitions;
     private LocalDate lastDayUpdated;
 
     public Milestone() {
@@ -36,7 +35,6 @@ public final class Milestone {
         blockingFor = new ArrayList<>();
         assignedDevs = new ArrayList<>();
         tickets = new ArrayList<>();
-        repartitions = new ArrayList<>();
     }
 
     public Milestone(final String name,
@@ -48,7 +46,7 @@ public final class Milestone {
                      final String createdBy) {
         this.name = name;
         this.dueDate = dueDate;
-        this.assignedDevs = assignedDevs;
+        this.assignedDevs = new ArrayList<>(assignedDevs);
         this.createdAt = createdAt;
         lastDayUpdated = createdAt;
         this.createdBy = createdBy;
@@ -70,10 +68,6 @@ public final class Milestone {
                     this.blockingFor.add(milestone);
                 }
             }
-        }
-        this.repartitions = new ArrayList<>();
-        for (String dev : assignedDevs) {
-            repartitions.add(new Repartition((Developer) appCenter.getUserByUsername(dev)));
         }
         blocked = false;
         status = "ACTIVE";

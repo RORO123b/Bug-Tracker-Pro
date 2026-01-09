@@ -12,6 +12,7 @@ import fileio.CommandInput;
 import fileio.InputLoader;
 import fileio.UserInput;
 
+
 import java.io.File;
 import java.io.IOException;
 
@@ -85,29 +86,39 @@ public class App {
             switch (command.getCommand()) {
                 case "reportTicket":
                     invoker.setCommand(new ReportTicketCommand());
-                    commandNode = invoker.pressButton(MAPPER, command);
                     break;
                 case "viewTickets":
                     invoker.setCommand(new ViewTicketsCommand());
-                    commandNode = invoker.pressButton(MAPPER, command);
                     break;
                 case "lostInvestors":
-                    // TODO
-                    commandNode = null;
+                    invoker.setCommand(new LostInvestorsCommand());
                     break;
                 case "createMilestone":
                     invoker.setCommand(new CreateMilestoneCommand());
-                    commandNode = invoker.pressButton(MAPPER, command);
                     break;
                 case "viewMilestones":
                     invoker.setCommand(new ViewMilestonesCommand());
-                    commandNode = invoker.pressButton(MAPPER, command);
+                    break;
+                case "assignTicket":
+                    invoker.setCommand(new AssignTicketCommand());
+                    break;
+                case "viewAssignedTickets":
+                    invoker.setCommand(new ViewAssignedTicketsCommand());
+                    break;
+                case "undoAssignTicket":
+                    invoker.setCommand(new UndoAssignTicketCommand());
+                    break;
+                case "addComment":
+                    invoker.setCommand(new AddCommentCommand());
+                    break;
+                case "undoAddComment":
+                    invoker.setCommand(new UndoAddCommentCommand());
                     break;
                 default:
-                    commandNode = MAPPER.createObjectNode();
-                    commandNode.put("command", command.getCommand());
+                    invoker.setCommand(new LostInvestorsCommand());
                     break;
             }
+            commandNode = invoker.pressButton(MAPPER, command);
             if (commandNode != null) {
                 outputs.add(commandNode);
             }

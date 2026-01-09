@@ -1,7 +1,7 @@
 package commands;
 
+import main.AppCenter;
 import milestones.Milestone;
-import milestones.Repartition;
 import tickets.Comment;
 import tickets.Ticket;
 import enums.TicketStatus;
@@ -10,6 +10,7 @@ import fileio.CommandInput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import users.Developer;
 
 public final class CommandHelper {
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -20,7 +21,7 @@ public final class CommandHelper {
 
     /**
      * Creates an ObjectNode for a Ticket.
-     * @param ticket
+     * @param ticket Ticket
      * @return ObjectNode for output
      */
     public static ObjectNode createTicketNode(final Ticket ticket) {
@@ -46,7 +47,42 @@ public final class CommandHelper {
                 commentNode.put("content", comment.getContent() != null
                         ? comment.getContent() : "");
                 commentNode.put("createdAt", comment.getCreatedAt() != null
-                        ? comment.getCreatedAt() : "");
+                        ? comment.getCreatedAt().toString() : "");
+                commentsArray.add(commentNode);
+            }
+        }
+        ticketNode.set("comments", commentsArray);
+
+        return ticketNode;
+    }
+
+    /**
+     * Creates an ObjectNode for a Ticket.
+     * @param ticket Ticket
+     * @return ObjectNode for output
+     */
+    public static ObjectNode createAssignedTicketNode(final Ticket ticket) {
+        ObjectNode ticketNode = MAPPER.createObjectNode();
+        ticketNode.put("id", ticket.getId());
+        ticketNode.put("type", ticket.getType() != null ? ticket.getType().toString() : "");
+        ticketNode.put("title", ticket.getTitle() != null ? ticket.getTitle() : "");
+        ticketNode.put("businessPriority", ticket.getBusinessPriority() != null
+                ? ticket.getBusinessPriority().toString() : "");
+        ticketNode.put("status", ticket.getStatus() != null ? ticket.getStatus().toString() : "");
+        ticketNode.put("createdAt", ticket.getCreatedAt() != null ? ticket.getCreatedAt() : "");
+        ticketNode.put("assignedAt", ticket.getAssignedAt() != null ? ticket.getAssignedAt() : "");
+        ticketNode.put("reportedBy", ticket.getReportedBy() != null ? ticket.getReportedBy() : "");
+
+        ArrayNode commentsArray = MAPPER.createArrayNode();
+        if (ticket.getComments() != null) {
+            for (Comment comment : ticket.getComments()) {
+                ObjectNode commentNode = MAPPER.createObjectNode();
+                commentNode.put("author", comment.getAuthor() != null
+                        ? comment.getAuthor() : "");
+                commentNode.put("content", comment.getContent() != null
+                        ? comment.getContent() : "");
+                commentNode.put("createdAt", comment.getCreatedAt() != null
+                        ? comment.getCreatedAt().toString() : "");
                 commentsArray.add(commentNode);
             }
         }
@@ -99,7 +135,7 @@ public final class CommandHelper {
         milestoneNode.put("createdBy", milestone.getCreatedBy() != null
                 ? milestone.getCreatedBy() : "");
         milestoneNode.put("status", milestone.getStatus() != null
-                ? milestone.getStatus().toString() : "");
+                ? milestone.getStatus() : "");
         milestoneNode.put("isBlocked", milestone.getBlocked());
         milestoneNode.put("daysUntilDue", milestone.getDaysUntilDue(command.getTimestamp()));
         milestoneNode.put("overdueBy", milestone.getOverdueBy(command.getTimestamp()));
@@ -107,7 +143,7 @@ public final class CommandHelper {
         ArrayNode openTicketsArray = MAPPER.createArrayNode();
         if (milestone.getTickets() != null) {
             for (Ticket ticket : milestone.getTickets()) {
-                if (ticket.getStatus() == TicketStatus.OPEN) {
+                if (ticket.getStatus() != TicketStatus.CLOSED) {
                     openTicketsArray.add(ticket.getId());
                 }
             }
@@ -127,22 +163,19 @@ public final class CommandHelper {
         milestoneNode.put("completionPercentage", milestone.getCompletionPercentage());
 
         ArrayNode repartitionArray = MAPPER.createArrayNode();
-        if (milestone.getRepartitions() != null) {
-            for (Repartition repartition : milestone.getRepartitions()) {
-                ObjectNode repartitionNode = MAPPER.createObjectNode();
-                repartitionNode.put("developer", repartition.getDeveloper() != null
-                        ? repartition.getDeveloper().getUsername() : "");
+        for (String username : milestone.getAssignedDevs()) {
+            AppCenter appCenter = AppCenter.getInstance();
+            Developer dev = (Developer) appCenter.getUserByUsername(username);
+            ObjectNode repartitionNode = MAPPER.createObjectNode();
+            repartitionNode.put("developer", dev != null
+                    ? dev.getUsername() : "");
 
-                ArrayNode assignedTicketsArray = MAPPER.createArrayNode();
-                if (repartition.getTickets() != null) {
-                    for (Ticket ticket : repartition.getTickets()) {
-                        assignedTicketsArray.add(ticket.getId());
-                    }
-                }
-
-                repartitionNode.set("assignedTickets", assignedTicketsArray);
-                repartitionArray.add(repartitionNode);
+            ArrayNode assignedTicketsArray = MAPPER.createArrayNode();
+            for (Ticket ticket : dev.getAssignedTickets()) {
+                assignedTicketsArray.add(ticket.getId());
             }
+            repartitionNode.set("assignedTickets", assignedTicketsArray);
+            repartitionArray.add(repartitionNode);
         }
         milestoneNode.set("repartition", repartitionArray);
 

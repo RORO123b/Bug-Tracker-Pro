@@ -19,5 +19,7 @@ public class CommandInput {
     private ArrayList<String> blockingFor;
     private ArrayList<Integer> tickets;
     private ArrayList<String> assignedDevs;
+    private Integer ticketID;
+    private String comment;
     private Params params;
 }

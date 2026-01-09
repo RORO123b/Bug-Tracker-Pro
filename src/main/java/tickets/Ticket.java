@@ -7,6 +7,7 @@ import enums.TicketType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,6 +26,10 @@ public abstract class Ticket {
     protected String assignedAt;
     protected String assignedTo;
     protected List<Comment> comments;
+
+    public Ticket() {
+        comments = new ArrayList<>();
+    }
 
     /**
      * Updates the business priority by increasing it one level.
