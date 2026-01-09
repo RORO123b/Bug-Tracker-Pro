@@ -10,7 +10,7 @@ public enum Severity {
 
     private final int value;
 
-    Severity(int value) {
+    Severity(final int value) {
         this.value = value;
     }
 }

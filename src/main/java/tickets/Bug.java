@@ -1,4 +1,4 @@
-package Tickets;
+package tickets;
 
 import enums.Frequency;
 import enums.Severity;

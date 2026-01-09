@@ -1,6 +1,9 @@
 package commands;
 
-import Tickets.*;
+import tickets.Ticket;
+import tickets.BugBuilder;
+import tickets.UIFeedbackBuilder;
+import tickets.FeatureRequestBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import enums.Phases;
@@ -8,20 +11,31 @@ import enums.TicketType;
 import fileio.CommandInput;
 import main.AppCenter;
 
-public class ReportTicketCommand implements Command {
-    public ReportTicketCommand() {}
+public final class ReportTicketCommand implements Command {
+    public ReportTicketCommand() { }
 
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    /**
+     * @param mapper the object mapper for JSON creation
+     * @param command the input data for reporting the ticket
+     * @return an error node if an exception occurs, otherwise null
+     */
+    @Override
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             if (appCenter.getCurrentPeriod() != Phases.TESTING) {
-                throw new IllegalStateException("Tickets can only be reported during testing phases.");
+                throw new IllegalStateException("Tickets can only be reported "
+                        + "during testing phases.");
             }
-            if (command.getParams().getReportedBy().isEmpty() && !command.getParams().getType().equals(TicketType.BUG)) {
-                throw new IllegalArgumentException("Anonymous reports are only allowed for tickets of type BUG.");
+            if (command.getParams().getReportedBy().isEmpty()
+                    && !command.getParams().getType().equals(TicketType.BUG)) {
+                throw new IllegalArgumentException("Anonymous reports are only "
+                        + "allowed for tickets of type BUG.");
             }
-            if (appCenter.getUsers().stream().noneMatch(user -> user.getUsername().equals(command.getUsername()))) {
-                throw new IllegalArgumentException("The user " + command.getUsername() + " does not exist.");
+            if (appCenter.getUsers().stream().noneMatch(user -> user.getUsername()
+                    .equals(command.getUsername()))) {
+                throw new IllegalArgumentException("The user " + command.getUsername()
+                        + " does not exist.");
             }
             Ticket ticket;
             if (command.getParams().getType().equals(TicketType.BUG)) {

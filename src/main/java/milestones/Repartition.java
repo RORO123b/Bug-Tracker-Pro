@@ -1,7 +1,7 @@
-package Milestones;
+package milestones;
 
-import Tickets.Ticket;
-import Users.Developer;
+import tickets.Ticket;
+import users.Developer;
 import lombok.Getter;
 import lombok.Setter;
 

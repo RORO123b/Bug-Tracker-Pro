@@ -1,6 +1,7 @@
-package Users;
+package users;
 
-import enums.*;
+import enums.BusinessPriority;
+import enums.ExpertiseArea;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,9 +13,14 @@ public class Developer extends User {
     private String seniority;
     private BusinessPriority businessPriority;
 
-    public Developer() {}
+    public Developer() { }
 
-    public Developer(String username, String email, String role, String hireDate, ExpertiseArea expertiseArea, String seniority) {
+    public Developer(final String username,
+                     final String email,
+                     final String role,
+                     final String hireDate,
+                     final ExpertiseArea expertiseArea,
+                     final String seniority) {
         super();
         this.username = username;
         this.email = email;

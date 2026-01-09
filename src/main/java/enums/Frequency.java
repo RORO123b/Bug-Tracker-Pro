@@ -11,7 +11,7 @@ public enum Frequency {
 
     private final int value;
 
-    Frequency(int value) {
+    Frequency(final int value) {
         this.value = value;
     }
 }

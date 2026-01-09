@@ -11,7 +11,7 @@ public enum CustomerDemand {
 
     private final int value;
 
-    CustomerDemand(int value) {
+    CustomerDemand(final int value) {
         this.value = value;
     }
 }

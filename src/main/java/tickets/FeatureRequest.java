@@ -1,4 +1,4 @@
-package Tickets;
+package tickets;
 
 import enums.BusinessValue;
 import enums.CustomerDemand;
@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FeatureRequest extends Ticket{
+public class FeatureRequest extends Ticket {
     private BusinessValue businessValue;
     private CustomerDemand customerDemand;
 

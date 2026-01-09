@@ -1,7 +1,6 @@
 package fileio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 
@@ -10,16 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Basic skeleton for loading input JSON file as a Map.
- * Students should implement deeper parsing themselves.
- */
 @Getter
 public class InputLoader {
     private ArrayList<CommandInput> commands;
     private ArrayList<UserInput> users;
 
-    public InputLoader(String filePath) throws IOException {
+    public InputLoader(final String filePath) throws IOException {
         if (filePath.contains("users")) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
@@ -28,7 +23,8 @@ public class InputLoader {
         } else {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
-            CommandInput[] commandArray = mapper.readValue(new File(filePath), CommandInput[].class);
+            CommandInput[] commandArray = mapper.readValue(new File(filePath),
+                                                            CommandInput[].class);
             this.commands = new ArrayList<>(List.of(commandArray));
         }
     }

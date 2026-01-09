@@ -11,7 +11,7 @@ public enum BusinessValue {
 
     private final int value;
 
-    BusinessValue(int value) {
+    BusinessValue(final int value) {
         this.value = value;
     }
 }

@@ -5,5 +5,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.CommandInput;
 
 public interface Command {
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command);
+    /**
+     * Executes command
+     * @param mapper
+     * @param command
+     * @return ObjectNode used for output
+     */
+    ObjectNode execute(ObjectMapper mapper, CommandInput command);
 }

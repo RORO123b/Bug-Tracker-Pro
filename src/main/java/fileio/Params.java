@@ -1,12 +1,16 @@
 package fileio;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import enums.BusinessPriority;
+import enums.ExpertiseArea;
+import enums.TicketStatus;
+import enums.TicketType;
+import enums.Frequency;
+import enums.Severity;
+import enums.BusinessValue;
+import enums.CustomerDemand;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import enums.*;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

@@ -1,12 +1,12 @@
 package main;
 
-import Users.UsersFactory;
+import users.UsersFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import Users.User;
+import users.User;
 import commands.*;
 import fileio.CommandInput;
 import fileio.InputLoader;

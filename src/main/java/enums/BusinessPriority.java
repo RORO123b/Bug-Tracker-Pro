@@ -11,7 +11,7 @@ public enum BusinessPriority {
 
     private final int value;
 
-    BusinessPriority(int value) {
+    BusinessPriority(final int value) {
         this.value = value;
     }
 }

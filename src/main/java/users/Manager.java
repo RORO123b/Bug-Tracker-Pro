@@ -1,4 +1,4 @@
-package Users;
+package users;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,12 +7,17 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Manager extends User{
+public class Manager extends User {
     private String hireDate;
     private List<String> subordinates;
 
-    public Manager() {}
-    public Manager(String username, String email, String role, String hireDate, List<String> subordinates) {
+    public Manager() { }
+
+    public Manager(final String username,
+                   final String email,
+                   final String role,
+                   final String hireDate,
+                   final List<String> subordinates) {
         super();
         this.username = username;
         this.email = email;

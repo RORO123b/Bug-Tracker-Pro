@@ -1,8 +1,8 @@
 package main;
 
-import Milestones.Milestone;
-import Tickets.Ticket;
-import Users.User;
+import milestones.Milestone;
+import tickets.Ticket;
+import users.User;
 import enums.Phases;
 import lombok.Getter;
 import lombok.Setter;

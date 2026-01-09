@@ -1,4 +1,4 @@
-package Tickets;
+package tickets;
 
 import enums.BusinessValue;
 import enums.TicketStatus;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UIFeedback extends Ticket{
+public class UIFeedback extends Ticket {
     protected String uiElementId;
     protected BusinessValue businessValue;
     protected Integer usabilityScore;

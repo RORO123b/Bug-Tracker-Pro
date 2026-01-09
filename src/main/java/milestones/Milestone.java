@@ -1,7 +1,7 @@
-package Milestones;
+package milestones;
 
-import Tickets.Ticket;
-import Users.Developer;
+import tickets.Ticket;
+import users.Developer;
 import enums.BusinessPriority;
 import enums.TicketStatus;
 import lombok.Getter;
@@ -11,11 +11,14 @@ import main.AppCenter;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
-public class Milestone {
+public final class Milestone {
+
+    private static final int BUSINESS_PRIORITY_UPDATE_INTERVAL = 3;
+    private static final double PERCENTAGE_MULTIPLIER = 100.0;
+
     private String name;
     private LocalDate dueDate;
     private ArrayList<Milestone> blockingFor;
@@ -36,7 +39,13 @@ public class Milestone {
         repartitions = new ArrayList<>();
     }
 
-    public Milestone(String name, LocalDate dueDate, ArrayList<String> blockingFor, ArrayList<Integer> tickets, ArrayList<String> assignedDevs, LocalDate createdAt, String createdBy) {
+    public Milestone(final String name,
+                     final LocalDate dueDate,
+                     final ArrayList<String> blockingFor,
+                     final ArrayList<Integer> tickets,
+                     final ArrayList<String> assignedDevs,
+                     final LocalDate createdAt,
+                     final String createdBy) {
         this.name = name;
         this.dueDate = dueDate;
         this.assignedDevs = assignedDevs;
@@ -68,15 +77,20 @@ public class Milestone {
         }
         blocked = false;
         status = "ACTIVE";
-        System.out.println("Milestone " + name + " has been created at " + createdAt + " ceva due date " + dueDate);
     }
 
-    public void checkBusinessPriority(LocalDate nowDate) {
-        if (blocked)
+    /**
+     * @param nowDate the current date to check against
+     */
+    public void checkBusinessPriority(final LocalDate nowDate) {
+        if (blocked) {
             return;
+        }
 
         boolean updated = false;
-        for (int i = 3; i <= (int) ChronoUnit.DAYS.between(lastDayUpdated, nowDate) + 1; i += 3) {
+        long daysDiff = ChronoUnit.DAYS.between(lastDayUpdated, nowDate) + 1;
+        for (int i = BUSINESS_PRIORITY_UPDATE_INTERVAL; i <= (int) daysDiff;
+             i += BUSINESS_PRIORITY_UPDATE_INTERVAL) {
             updated = true;
             for (Ticket ticket : tickets) {
                 ticket.updateBusinessPriority();
@@ -92,17 +106,28 @@ public class Milestone {
         }
     }
 
-    public int getDaysUntilDue(LocalDate currentDate) {
+    /**
+     * @param currentDate the current date
+     * @return number of days until due
+     */
+    public int getDaysUntilDue(final LocalDate currentDate) {
         return Math.max((int) ChronoUnit.DAYS.between(currentDate, dueDate) + 1, 0);
     }
 
-    public int getOverdueBy(LocalDate currentDate) {
+    /**
+     * @param currentDate the current date
+     * @return number of days overdue
+     */
+    public int getOverdueBy(final LocalDate currentDate) {
         if (currentDate.isAfter(dueDate)) {
             return (int) ChronoUnit.DAYS.between(dueDate, currentDate) + 1;
         }
         return 0;
     }
 
+    /**
+     * @return the percentage of closed tickets
+     */
     public double getCompletionPercentage() {
         int total = 0;
         for (Ticket ticket : tickets) {
@@ -110,6 +135,9 @@ public class Milestone {
                 total++;
             }
         }
-        return (double) total / tickets.size() * 100;
+        if (tickets.isEmpty()) {
+            return 0.0;
+        }
+        return (double) total / tickets.size() * PERCENTAGE_MULTIPLIER;
     }
 }
