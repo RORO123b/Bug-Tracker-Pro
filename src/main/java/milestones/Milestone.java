@@ -1,7 +1,6 @@
 package milestones;
 
 import tickets.Ticket;
-import users.Developer;
 import enums.BusinessPriority;
 import enums.TicketStatus;
 import lombok.Getter;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 public final class Milestone {
 
     private static final int BUSINESS_PRIORITY_UPDATE_INTERVAL = 3;
-    private static final double PERCENTAGE_MULTIPLIER = 100.0;
+    private static final double PERCENTAGE = 100.0;
 
     private String name;
     private LocalDate dueDate;
@@ -29,6 +28,8 @@ public final class Milestone {
     private String createdBy;
     private String status;
     private LocalDate lastDayUpdated;
+    private int overdueBy;
+    private int daysUntilDue;
 
     public Milestone() {
         blocked = true;
@@ -102,21 +103,26 @@ public final class Milestone {
 
     /**
      * @param currentDate the current date
-     * @return number of days until due
      */
-    public int getDaysUntilDue(final LocalDate currentDate) {
-        return Math.max((int) ChronoUnit.DAYS.between(currentDate, dueDate) + 1, 0);
+    public void calculateDaysUntilDue(final LocalDate currentDate) {
+        if (status.equals("COMPLETED")) {
+            return;
+        }
+        daysUntilDue = Math.max((int) ChronoUnit.DAYS.between(currentDate, dueDate) + 1, 0);
     }
 
     /**
      * @param currentDate the current date
-     * @return number of days overdue
      */
-    public int getOverdueBy(final LocalDate currentDate) {
-        if (currentDate.isAfter(dueDate)) {
-            return (int) ChronoUnit.DAYS.between(dueDate, currentDate) + 1;
+    public void calculateOverdueBy(final LocalDate currentDate) {
+        if (status.equals("COMPLETED")) {
+            return;
         }
-        return 0;
+        if (currentDate.isAfter(dueDate)) {
+            overdueBy = (int) ChronoUnit.DAYS.between(dueDate, currentDate) + 1;
+        } else {
+            overdueBy = 0;
+        }
     }
 
     /**
@@ -132,6 +138,7 @@ public final class Milestone {
         if (tickets.isEmpty()) {
             return 0.0;
         }
-        return (double) total / tickets.size() * PERCENTAGE_MULTIPLIER;
+        double percentage = (double) total / tickets.size();
+        return Math.round(percentage * PERCENTAGE) / PERCENTAGE;
     }
 }

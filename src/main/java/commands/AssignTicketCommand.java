@@ -7,7 +7,9 @@ import enums.TicketStatus;
 import fileio.CommandInput;
 import main.AppCenter;
 import milestones.Milestone;
+import tickets.action.Action;
 import tickets.Ticket;
+import tickets.action.ActionBuilder;
 import users.Developer;
 
 public final class AssignTicketCommand implements Command {
@@ -67,7 +69,20 @@ public final class AssignTicketCommand implements Command {
             }
             dev.addTicket(ticket);
             ticket.setAssignedAt(command.getTimestamp().toString());
+            ticket.setAssignedTo(dev.getUsername());
             ticket.setStatus(TicketStatus.IN_PROGRESS);
+            ticket.getHistory().add(new ActionBuilder()
+                    .action("ASSIGNED")
+                    .by(command.getUsername())
+                    .timestamp(command.getTimestamp())
+                    .build());
+            ticket.getHistory().add(new ActionBuilder()
+                    .action("STATUS_CHANGED")
+                    .oldStatus(TicketStatus.OPEN.toString())
+                    .newStatus(TicketStatus.IN_PROGRESS.toString())
+                    .by(command.getUsername())
+                    .timestamp(command.getTimestamp())
+                    .build());
         } catch (IllegalStateException | IllegalArgumentException e) {
             ObjectNode error = mapper.createObjectNode();
             error.put("command", command.getCommand());

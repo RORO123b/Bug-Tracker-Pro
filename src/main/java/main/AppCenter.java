@@ -2,6 +2,7 @@ package main;
 
 import enums.BusinessPriority;
 import enums.ExpertiseArea;
+import enums.TicketStatus;
 import milestones.Milestone;
 import tickets.Ticket;
 import users.User;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public final class AppCenter {
+public class AppCenter {
     private static final int TESTING_PHASE_DURATION = 12;
     private static AppCenter instance;
 
@@ -44,9 +45,20 @@ public final class AppCenter {
         }
     }
 
-    private void checkBusinessPriority(final LocalDate currentDate) {
+    private void updateMilestones(final LocalDate currentDate) {
         for (Milestone milestone : milestones) {
             milestone.checkBusinessPriority(currentDate);
+            boolean ok = true;
+            for (Ticket ticket : milestone.getTickets()) {
+                if (ticket.getStatus() != TicketStatus.CLOSED) {
+                    ok = false;
+                }
+            }
+            if (ok) {
+                milestone.setStatus("COMPLETED");
+            }
+            milestone.calculateOverdueBy(currentDate);
+            milestone.calculateDaysUntilDue(currentDate);
         }
     }
 
@@ -55,7 +67,7 @@ public final class AppCenter {
      */
     public void updates(final LocalDate currentDate) {
         checkTransition(currentDate);
-        checkBusinessPriority(currentDate);
+        updateMilestones(currentDate);
     }
 
     /**

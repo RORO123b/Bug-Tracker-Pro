@@ -2,38 +2,33 @@ package commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import enums.TicketStatus;
 import fileio.CommandInput;
 import main.AppCenter;
 import tickets.Ticket;
 import tickets.action.ActionBuilder;
 import users.Developer;
 
-public class UndoAssignTicketCommand implements Command {
-    public UndoAssignTicketCommand() {}
+public class ChangeStatusCommand implements Command {
+    public ChangeStatusCommand() { }
 
     @Override
     public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
-            Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
             Ticket ticket = appCenter.getTickets().get(command.getTicketID());
-
-            if (ticket.getStatus() !=  TicketStatus.IN_PROGRESS) {
-                throw new IllegalStateException("Only IN_PROGRESS tickets can be unassigned.");
+            Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
+            if (!dev.getAssignedTickets().contains(ticket)) {
+                throw new IllegalArgumentException("Ticket " + ticket.getId() + " is not assigned to developer " + dev.getUsername() + ".");
             }
-
-            dev.removeTicket(ticket);
-            ticket.setStatus(TicketStatus.OPEN);
-            ticket.setAssignedAt("");
-            ticket.setAssignedTo("");
             ticket.getHistory().add(new ActionBuilder()
-                    .action("DE-ASSIGNED")
+                    .action("STATUS_CHANGED")
+                    .oldStatus(ticket.getStatus().toString())
                     .by(command.getUsername())
                     .timestamp(command.getTimestamp())
                     .build());
-            return null;
-        } catch (IllegalStateException e) {
+            ticket.changeStatus();
+            ticket.getHistory().getLast().setNewStatus(ticket.getStatus().toString());
+        } catch (IllegalArgumentException e) {
             ObjectNode error = mapper.createObjectNode();
             error.put("command", command.getCommand());
             error.put("username", command.getUsername());
@@ -41,5 +36,6 @@ public class UndoAssignTicketCommand implements Command {
             error.put("error", e.getMessage());
             return error;
         }
+        return null;
     }
 }

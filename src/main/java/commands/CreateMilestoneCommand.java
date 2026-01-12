@@ -2,6 +2,7 @@ package commands;
 
 import milestones.Milestone;
 import tickets.Ticket;
+import tickets.action.ActionBuilder;
 import users.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -45,7 +46,14 @@ public final class CreateMilestoneCommand implements Command {
                     command.getTimestamp(),
                     command.getUsername()
             ));
-
+            for (Integer ticketId : command.getTickets()) {
+                appCenter.getTickets().get(ticketId).getHistory().add(new ActionBuilder()
+                        .action("ADDED_TO_MILESTONE")
+                        .milestone(command.getName())
+                        .by(command.getUsername())
+                        .timestamp(command.getTimestamp())
+                        .build());
+            }
             return null;
         } catch (IllegalArgumentException e) {
             ObjectNode error = mapper.createObjectNode();

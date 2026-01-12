@@ -12,7 +12,6 @@ import fileio.CommandInput;
 import fileio.InputLoader;
 import fileio.UserInput;
 
-
 import java.io.File;
 import java.io.IOException;
 
@@ -113,6 +112,15 @@ public class App {
                     break;
                 case "undoAddComment":
                     invoker.setCommand(new UndoAddCommentCommand());
+                    break;
+                case "changeStatus":
+                    invoker.setCommand(new ChangeStatusCommand());
+                    break;
+                case "undoChangeStatus":
+                    invoker.setCommand(new UndoChangeStatusCommand());
+                    break;
+                case "viewTicketHistory":
+                    invoker.setCommand(new ViewTicketHistoryCommand());
                     break;
                 default:
                     invoker.setCommand(new LostInvestorsCommand());

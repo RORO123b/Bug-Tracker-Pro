@@ -6,6 +6,7 @@ import enums.TicketStatus;
 import enums.TicketType;
 import lombok.Getter;
 import lombok.Setter;
+import tickets.action.Action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,11 @@ public abstract class Ticket {
     protected String assignedAt;
     protected String assignedTo;
     protected List<Comment> comments;
+    protected List<Action> history;
 
     public Ticket() {
         comments = new ArrayList<>();
+        history = new ArrayList<>();
     }
 
     /**
@@ -42,5 +45,32 @@ public abstract class Ticket {
         } else if (businessPriority == BusinessPriority.HIGH) {
             businessPriority = BusinessPriority.CRITICAL;
         }
+    }
+
+    public final void changeStatus() {
+        if (status == TicketStatus.OPEN) {
+            status = TicketStatus.IN_PROGRESS;
+        } else if (status == TicketStatus.IN_PROGRESS) {
+            status = TicketStatus.RESOLVED;
+        } else if (status == TicketStatus.RESOLVED) {
+            status = TicketStatus.CLOSED;
+        }
+    }
+
+    public final void undoChangeStatus() {
+        if (status == TicketStatus.CLOSED) {
+            status = TicketStatus.RESOLVED;
+        } else if (status == TicketStatus.RESOLVED) {
+            status = TicketStatus.IN_PROGRESS;
+        }
+    }
+
+    public final boolean checkPastDevs(String username) {
+        for (Action action : history) {
+            if (action.getAction().equals("ASSIGNED") && action.getBy().equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -2,6 +2,7 @@ package commands;
 
 import main.AppCenter;
 import milestones.Milestone;
+import tickets.action.Action;
 import tickets.Comment;
 import tickets.Ticket;
 import enums.TicketStatus;
@@ -137,8 +138,8 @@ public final class CommandHelper {
         milestoneNode.put("status", milestone.getStatus() != null
                 ? milestone.getStatus() : "");
         milestoneNode.put("isBlocked", milestone.getBlocked());
-        milestoneNode.put("daysUntilDue", milestone.getDaysUntilDue(command.getTimestamp()));
-        milestoneNode.put("overdueBy", milestone.getOverdueBy(command.getTimestamp()));
+        milestoneNode.put("daysUntilDue", milestone.getDaysUntilDue());
+        milestoneNode.put("overdueBy", milestone.getOverdueBy());
 
         ArrayNode openTicketsArray = MAPPER.createArrayNode();
         if (milestone.getTickets() != null) {
@@ -172,7 +173,9 @@ public final class CommandHelper {
 
             ArrayNode assignedTicketsArray = MAPPER.createArrayNode();
             for (Ticket ticket : dev.getAssignedTickets()) {
-                assignedTicketsArray.add(ticket.getId());
+                if (milestone.getTickets().contains(ticket)) {
+                    assignedTicketsArray.add(ticket.getId());
+                }
             }
             repartitionNode.set("assignedTickets", assignedTicketsArray);
             repartitionArray.add(repartitionNode);
@@ -181,4 +184,33 @@ public final class CommandHelper {
 
         return milestoneNode;
     }
+
+    public static ObjectNode createActionNode(Action action) {
+        ObjectNode actionNode = MAPPER.createObjectNode();
+
+        if (action.getAction().equals("STATUS_CHANGED")) {
+            actionNode.put("from", action.getOldStatus());
+            actionNode.put("to", action.getNewStatus());
+            actionNode.put("by", action.getBy());
+        }
+
+        if (action.getAction().equals("ASSIGNED") || action.getAction().equals("DE-ASSIGNED")) {
+            actionNode.put("by", action.getBy());
+        }
+
+        if (action.getAction().equals("ADDED_TO_MILESTONE")) {
+            actionNode.put("milestone", action.getMilestone());
+            actionNode.put("by", action.getBy());
+        }
+
+        if (action.getAction().equals("REMOVED_FROM_DEV")) {
+            actionNode.put("by", action.getBy());
+            actionNode.put("from", action.getRemovedDev());
+        }
+
+        actionNode.put("timestamp", action.getTimestamp().toString());
+        actionNode.put("action", action.getAction());
+        return actionNode;
+    }
+
 }

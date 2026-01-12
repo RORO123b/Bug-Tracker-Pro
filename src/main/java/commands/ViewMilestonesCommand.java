@@ -22,7 +22,7 @@ public final class ViewMilestonesCommand implements Command {
         commandNode.put("timestamp", command.getTimestamp().toString());
 
         AppCenter appCenter = AppCenter.getInstance();
-        ArrayNode milstonesArray = mapper.createArrayNode();
+        ArrayNode milestonesArray = mapper.createArrayNode();
         User user = appCenter.getUserByUsername(command.getUsername());
 
         if (user.getRole().equals("MANAGER")) {
@@ -30,7 +30,7 @@ public final class ViewMilestonesCommand implements Command {
                 if (milestone.getCreatedBy().equals(command.getUsername())) {
                     ObjectNode milestoneNode = CommandHelper.createMilestoneNode(milestone,
                             command);
-                    milstonesArray.add(milestoneNode);
+                    milestonesArray.add(milestoneNode);
                 }
             }
         } else if (user.getRole().equals("DEVELOPER")) {
@@ -38,11 +38,11 @@ public final class ViewMilestonesCommand implements Command {
                 if (milestone.getAssignedDevs().contains(command.getUsername())) {
                     ObjectNode milestoneNode = CommandHelper.createMilestoneNode(milestone,
                             command);
-                    milstonesArray.add(milestoneNode);
+                    milestonesArray.add(milestoneNode);
                 }
             }
         }
-        commandNode.set("milestones", milstonesArray);
+        commandNode.set("milestones", milestonesArray);
         return commandNode;
     }
 }
