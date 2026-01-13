@@ -28,6 +28,7 @@ public abstract class Ticket {
     protected String assignedTo;
     protected List<Comment> comments;
     protected List<Action> history;
+    protected List<String> matchingWords;
 
     public Ticket() {
         comments = new ArrayList<>();

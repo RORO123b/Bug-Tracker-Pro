@@ -38,7 +38,7 @@ public class AppCenter {
 
     private void checkTransition(final LocalDate currentDate) {
         if (currentPeriod == Phases.TESTING) {
-            if ((int) ChronoUnit.DAYS.between(datePeriodStart, currentDate) + 1 >= 12) {
+            if ((int) ChronoUnit.DAYS.between(datePeriodStart, currentDate) + 1 >= TESTING_PHASE_DURATION) {
                 currentPeriod = Phases.DEVELOPMENT;
                 datePeriodStart = currentDate;
             }

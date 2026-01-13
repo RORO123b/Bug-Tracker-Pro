@@ -18,6 +18,7 @@ public class Developer extends User {
     private String seniority;
     private BusinessPriority businessPriority;
     private List<Ticket> assignedTickets;
+    private double performanceScore;
 
     public Developer() {
         assignedTickets = new ArrayList<>();
@@ -53,5 +54,41 @@ public class Developer extends User {
         if (assignedTickets.contains(ticket)) {
             assignedTickets.remove(ticket);
         }
+    }
+
+    public boolean canHandleExpertise(final ExpertiseArea ticketExpertise) {
+        if (this.expertiseArea == ExpertiseArea.FULLSTACK) {
+            return true;
+        }
+        if (this.expertiseArea == ticketExpertise) {
+            return true;
+        }
+        if (this.expertiseArea == ExpertiseArea.FRONTEND 
+            && ticketExpertise == ExpertiseArea.DESIGN) {
+            return true;
+        }
+        if (this.expertiseArea == ExpertiseArea.DESIGN 
+            && ticketExpertise == ExpertiseArea.FRONTEND) {
+            return true;
+        }
+        if (this.expertiseArea == ExpertiseArea.BACKEND 
+            && ticketExpertise == ExpertiseArea.DB) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canHandlePriority(final BusinessPriority ticketPriority) {
+        if ("SENIOR".equals(this.seniority)) {
+            return true;
+        }
+        if ("MID".equals(this.seniority)) {
+            return ticketPriority != BusinessPriority.CRITICAL;
+        }
+        if ("JUNIOR".equals(this.seniority)) {
+            return ticketPriority == BusinessPriority.LOW 
+                || ticketPriority == BusinessPriority.MEDIUM;
+        }
+        return false;
     }
 }

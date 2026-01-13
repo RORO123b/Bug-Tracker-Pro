@@ -22,4 +22,5 @@ public class CommandInput {
     private Integer ticketID;
     private String comment;
     private Params params;
+    private FilterInput filters;
 }

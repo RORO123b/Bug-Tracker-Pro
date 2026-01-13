@@ -7,10 +7,6 @@ import java.util.List;
 
 public final class UsersFactory {
 
-    private UsersFactory() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     /**
      * Creates a basic User.
      * @param username the user's name

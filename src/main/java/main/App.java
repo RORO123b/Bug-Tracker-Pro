@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import users.User;
 import commands.*;
+import commands.search.SearchCommand;
 import fileio.CommandInput;
 import fileio.InputLoader;
 import fileio.UserInput;
@@ -121,6 +122,9 @@ public class App {
                     break;
                 case "viewTicketHistory":
                     invoker.setCommand(new ViewTicketHistoryCommand());
+                    break;
+                case "search":
+                    invoker.setCommand(new SearchCommand());
                     break;
                 default:
                     invoker.setCommand(new LostInvestorsCommand());
