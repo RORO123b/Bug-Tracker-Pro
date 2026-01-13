@@ -2,7 +2,7 @@ package tickets.action;
 
 import java.time.LocalDate;
 
-public class ActionBuilder {
+public final class ActionBuilder {
     private String action;
     private String by;
     private String to;
@@ -12,46 +12,90 @@ public class ActionBuilder {
     private String newStatus;
     private String removedDev;
 
-    public ActionBuilder action(final String action) {
-        this.action = action;
+    /**
+     * Sets the action.
+     * @param actionParam the action name
+     * @return the builder instance
+     */
+    public ActionBuilder action(final String actionParam) {
+        this.action = actionParam;
         return this;
     }
 
-    public ActionBuilder by(final String by) {
-        this.by = by;
+    /**
+     * Sets the performer.
+     * @param byParam the username
+     * @return the builder instance
+     */
+    public ActionBuilder by(final String byParam) {
+        this.by = byParam;
         return this;
     }
 
-    public ActionBuilder to(final String to) {
-        this.to = to;
+    /**
+     * Sets the recipient.
+     * @param toParam the username
+     * @return the builder instance
+     */
+    public ActionBuilder to(final String toParam) {
+        this.to = toParam;
         return this;
     }
 
-    public ActionBuilder milestone(final String milestone) {
-        this.milestone = milestone;
+    /**
+     * Sets the milestone.
+     * @param milestoneParam the milestone name
+     * @return the builder instance
+     */
+    public ActionBuilder milestone(final String milestoneParam) {
+        this.milestone = milestoneParam;
         return this;
     }
 
-    public ActionBuilder timestamp(final LocalDate timestamp) {
-        this.timestamp = timestamp;
+    /**
+     * Sets the timestamp.
+     * @param timestampParam the date
+     * @return the builder instance
+     */
+    public ActionBuilder timestamp(final LocalDate timestampParam) {
+        this.timestamp = timestampParam;
         return this;
     }
 
-    public ActionBuilder oldStatus(final String oldStatus) {
-        this.oldStatus = oldStatus;
+    /**
+     * Sets the old status.
+     * @param oldStatusParam the status
+     * @return the builder instance
+     */
+    public ActionBuilder oldStatus(final String oldStatusParam) {
+        this.oldStatus = oldStatusParam;
         return this;
     }
 
-    public ActionBuilder newStatus(final String newStatus) {
-        this.newStatus = newStatus;
+    /**
+     * Sets the new status.
+     * @param newStatusParam the status
+     * @return the builder instance
+     */
+    public ActionBuilder newStatus(final String newStatusParam) {
+        this.newStatus = newStatusParam;
         return this;
     }
 
-    public ActionBuilder removedDev(final String removedDev) {
-        this.removedDev = removedDev;
+    /**
+     * Sets the removed developer.
+     * @param removedDevParam the username
+     * @return the builder instance
+     */
+    public ActionBuilder removedDev(final String removedDevParam) {
+        this.removedDev = removedDevParam;
         return this;
     }
 
+    /**
+     * Builds the action object.
+     * @return the final Action
+     */
     public Action build() {
         Action actionObj = new Action();
         actionObj.setAction(action);

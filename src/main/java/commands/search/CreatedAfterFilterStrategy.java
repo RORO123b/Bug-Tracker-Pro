@@ -5,9 +5,9 @@ import tickets.Ticket;
 
 import java.time.LocalDate;
 
-public class CreatedAfterFilterStrategy implements FilterStrategy<Ticket> {
+public final class CreatedAfterFilterStrategy implements FilterStrategy<Ticket> {
     @Override
-    public boolean matches(Ticket ticket, FilterInput filters) {
+    public boolean matches(final Ticket ticket, final FilterInput filters) {
         LocalDate createdAfter = filters.getCreatedAfter();
         if (createdAfter == null) {
             return true;

@@ -48,6 +48,9 @@ public abstract class Ticket {
         }
     }
 
+    /**
+     * Changes the ticket status to the next status in the workflow
+     */
     public final void changeStatus() {
         if (status == TicketStatus.OPEN) {
             status = TicketStatus.IN_PROGRESS;
@@ -58,6 +61,9 @@ public abstract class Ticket {
         }
     }
 
+    /**
+     * Undoes the last status change.
+     */
     public final void undoChangeStatus() {
         if (status == TicketStatus.CLOSED) {
             status = TicketStatus.RESOLVED;
@@ -66,7 +72,12 @@ public abstract class Ticket {
         }
     }
 
-    public final boolean checkPastDevs(String username) {
+    /**
+     * Checks if a developer was previously assigned to this ticket.
+     * @param username the username to check
+     * @return true if the developer was previously assigned, false otherwise
+     */
+    public final boolean checkPastDevs(final String username) {
         for (Action action : history) {
             if (action.getAction().equals("ASSIGNED") && action.getBy().equals(username)) {
                 return true;

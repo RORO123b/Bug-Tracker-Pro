@@ -4,9 +4,9 @@ import enums.TicketType;
 import fileio.FilterInput;
 import tickets.Ticket;
 
-public class TypeFilterStrategy implements FilterStrategy<Ticket> {
+public final class TypeFilterStrategy implements FilterStrategy<Ticket> {
     @Override
-    public boolean matches(Ticket ticket, FilterInput filters) {
+    public boolean matches(final Ticket ticket, final FilterInput filters) {
         String filterType = filters.getType();
         if (filterType == null || filterType.isEmpty()) {
             return true;

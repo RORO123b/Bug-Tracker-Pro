@@ -9,11 +9,17 @@ import tickets.Ticket;
 import tickets.action.ActionBuilder;
 import users.Developer;
 
-public class UndoAssignTicketCommand implements Command {
-    public UndoAssignTicketCommand() {}
+public final class UndoAssignTicketCommand implements Command {
+    public UndoAssignTicketCommand() { }
 
+    /**
+     * Executes the undo assignment command
+     * @param mapper the object mapper for JSON creation
+     * @param command the input command details
+     * @return the result node or null
+     */
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());

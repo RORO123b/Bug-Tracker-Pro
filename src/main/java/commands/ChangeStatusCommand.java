@@ -8,17 +8,18 @@ import tickets.Ticket;
 import tickets.action.ActionBuilder;
 import users.Developer;
 
-public class ChangeStatusCommand implements Command {
+public final class ChangeStatusCommand implements Command {
     public ChangeStatusCommand() { }
 
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Ticket ticket = appCenter.getTickets().get(command.getTicketID());
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
             if (!dev.getAssignedTickets().contains(ticket)) {
-                throw new IllegalArgumentException("Ticket " + ticket.getId() + " is not assigned to developer " + dev.getUsername() + ".");
+                throw new IllegalArgumentException("Ticket " + ticket.getId()
+                        + " is not assigned to developer " + dev.getUsername() + ".");
             }
             ticket.getHistory().add(new ActionBuilder()
                     .action("STATUS_CHANGED")

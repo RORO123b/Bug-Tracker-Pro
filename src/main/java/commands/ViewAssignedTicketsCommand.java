@@ -3,20 +3,24 @@ package commands;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import enums.TicketStatus;
 import fileio.CommandInput;
 import main.AppCenter;
 import tickets.Ticket;
 import users.Developer;
-import users.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ViewAssignedTicketsCommand implements Command {
-    public ViewAssignedTicketsCommand() {}
+public final class ViewAssignedTicketsCommand implements Command {
+    public ViewAssignedTicketsCommand() { }
 
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    /**
+     * Executes the view assigned tickets command
+     * @param mapper the object mapper for JSON creation
+     * @param command the input command details
+     * @return the result node
+     */
+    @Override
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         ObjectNode commandNode =  mapper.createObjectNode();
         commandNode.put("command", command.getCommand());
         commandNode.put("username", command.getUsername());

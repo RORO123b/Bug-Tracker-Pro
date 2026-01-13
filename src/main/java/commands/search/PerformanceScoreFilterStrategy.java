@@ -3,9 +3,9 @@ package commands.search;
 import fileio.FilterInput;
 import users.Developer;
 
-public class PerformanceScoreFilterStrategy implements FilterStrategy<Developer> {
+public final class PerformanceScoreFilterStrategy implements FilterStrategy<Developer> {
     @Override
-    public boolean matches(Developer dev, FilterInput filters) {
+    public boolean matches(final Developer dev, final FilterInput filters) {
         Double above = filters.getPerformanceScoreAbove();
 
         if (above != null && dev.getPerformanceScore() <= above) {

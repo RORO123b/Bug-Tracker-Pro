@@ -9,9 +9,15 @@ import users.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeveloperSearchTypeStrategy implements SearchTypeStrategy {
+public final class DeveloperSearchTypeStrategy implements SearchTypeStrategy {
+    /**
+     * Executes the developer search strategy for a given manager
+     * @param requester the user requesting the search
+     * @param filters the filter criteria
+     * @return the list of developers found
+     */
     @Override
-    public List<Developer> execute(User requester, FilterInput filters) {
+    public List<Developer> execute(final User requester, final FilterInput filters) {
         if (!"MANAGER".equals(requester.getRole())) {
             return new ArrayList<>();
         }

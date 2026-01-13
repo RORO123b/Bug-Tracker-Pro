@@ -7,6 +7,9 @@ import java.util.List;
 
 public final class UsersFactory {
 
+    private UsersFactory() {
+    }
+
     /**
      * Creates a basic User.
      * @param username the user's name

@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DeveloperSearchEngine {
+public final class DeveloperSearchEngine {
     private final List<FilterStrategy<Developer>> strategies;
 
     public DeveloperSearchEngine() {
@@ -18,7 +18,13 @@ public class DeveloperSearchEngine {
         strategies.add(new PerformanceScoreFilterStrategy());
     }
 
-    public List<Developer> search(List<Developer> initialPool, FilterInput filters) {
+    /**
+     * Searches developers matching the given filters
+     * @param initialPool the initial pool of developers
+     * @param filters the filters to apply
+     * @return a list of matching developers
+     */
+    public List<Developer> search(final List<Developer> initialPool, final FilterInput filters) {
         return initialPool.stream()
                 .filter(dev -> strategies.stream().allMatch(s -> s.matches(dev, filters)))
                 .sorted(Comparator.comparing(Developer::getUsername))

@@ -34,7 +34,8 @@ public final class ViewTicketsCommand implements Command {
         } else if (user.getRole().equals("DEVELOPER")) {
             for (Ticket ticket : appCenter.getTickets()) {
                 if (ticket.getStatus().equals(TicketStatus.OPEN)
-                        && appCenter.getMilestoneByTicketID(ticket.getId()).getAssignedDevs().contains(user.getUsername())) {
+                        && appCenter.getMilestoneByTicketID(ticket.getId())
+                                    .getAssignedDevs().contains(user.getUsername())) {
                     ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
                     ticketsArray.add(ticketNode);
                 }

@@ -11,9 +11,9 @@ import users.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketSearchTypeStrategy implements SearchTypeStrategy {
+public final class TicketSearchTypeStrategy implements SearchTypeStrategy {
     @Override
-    public List<Ticket> execute(User requester, FilterInput filters) {
+    public List<Ticket> execute(final User requester, final FilterInput filters) {
         AppCenter appCenter = AppCenter.getInstance();
         List<Ticket> initialPool = new ArrayList<>();
 

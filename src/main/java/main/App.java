@@ -1,5 +1,6 @@
 package main;
 
+import commands.*;
 import users.UsersFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -7,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import users.User;
-import commands.*;
 import commands.search.SearchCommand;
 import fileio.CommandInput;
 import fileio.InputLoader;
@@ -20,7 +20,7 @@ import java.io.IOException;
  * main.App represents the main application logic that processes input commands,
  * generates outputs, and writes them to a file
  */
-public class App {
+public final class App {
     private App() {
     }
 

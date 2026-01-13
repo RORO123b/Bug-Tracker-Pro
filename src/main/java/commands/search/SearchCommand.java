@@ -16,8 +16,14 @@ import java.util.List;
 public final class SearchCommand implements Command {
     public SearchCommand() { }
 
+    /**
+     * Executes the search command based on the specified search type
+     * @param mapper the object mapper for JSON creation
+     * @param command the input command details
+     * @return the result node
+     */
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         ObjectNode commandNode = mapper.createObjectNode();
         commandNode.put("command", command.getCommand());
         commandNode.put("username", command.getUsername());
@@ -74,9 +80,9 @@ public final class SearchCommand implements Command {
                 ticketNode.put("reportedBy", ticket.getReportedBy() != null
                         ? ticket.getReportedBy() : "");
 
-                if (filters != null && filters.getKeywords() != null 
+                if (filters != null && filters.getKeywords() != null
                         && !filters.getKeywords().isEmpty()
-                        && ticket.getMatchingWords() != null 
+                        && ticket.getMatchingWords() != null
                         && !ticket.getMatchingWords().isEmpty()) {
                     ArrayNode matchingWordsArray = mapper.createArrayNode();
                     for (String word : ticket.getMatchingWords()) {

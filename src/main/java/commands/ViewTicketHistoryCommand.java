@@ -11,9 +11,9 @@ import tickets.action.Action;
 import tickets.Ticket;
 import users.User;
 
-public class ViewTicketHistoryCommand implements Command {
+public final class ViewTicketHistoryCommand implements Command {
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         AppCenter appCenter = AppCenter.getInstance();
         User user = appCenter.getUserByUsername(command.getUsername());
         ObjectNode commandNode = mapper.createObjectNode();
@@ -56,9 +56,11 @@ public class ViewTicketHistoryCommand implements Command {
         }
         if (user.getRole().equals("DEVELOPER")) {
             for (Ticket ticket : appCenter.getTickets()) {
-                if (ticket.getAssignedTo() == null)
+                if (ticket.getAssignedTo() == null) {
                     continue;
-                if (ticket.getAssignedTo().equals(user.getUsername()) || ticket.checkPastDevs(user.getUsername())) {
+                }
+                if (ticket.getAssignedTo().equals(user.getUsername())
+                        || ticket.checkPastDevs(user.getUsername())) {
                     ObjectNode ticketNode = mapper.createObjectNode();
                     ticketNode.put("id", ticket.getId());
                     ticketNode.put("title", ticket.getTitle());

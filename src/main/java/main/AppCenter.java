@@ -19,7 +19,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AppCenter {
+public final class AppCenter {
     private static final int TESTING_PHASE_DURATION = 12;
     private static AppCenter instance;
 
@@ -38,7 +38,8 @@ public class AppCenter {
 
     private void checkTransition(final LocalDate currentDate) {
         if (currentPeriod == Phases.TESTING) {
-            if ((int) ChronoUnit.DAYS.between(datePeriodStart, currentDate) + 1 >= TESTING_PHASE_DURATION) {
+            if ((int) ChronoUnit.DAYS.between(datePeriodStart, currentDate)
+                    + 1 >= TESTING_PHASE_DURATION) {
                 currentPeriod = Phases.DEVELOPMENT;
                 datePeriodStart = currentDate;
             }

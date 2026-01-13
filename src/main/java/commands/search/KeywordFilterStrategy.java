@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class KeywordFilterStrategy implements FilterStrategy<Ticket> {
+public final class KeywordFilterStrategy implements FilterStrategy<Ticket> {
     @Override
-    public boolean matches(Ticket ticket, FilterInput filters) {
+    public boolean matches(final Ticket ticket, final FilterInput filters) {
         List<String> keywords = filters.getKeywords();
         if (keywords == null || keywords.isEmpty()) {
             return true;

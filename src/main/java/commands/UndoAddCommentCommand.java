@@ -6,11 +6,11 @@ import fileio.CommandInput;
 import main.AppCenter;
 import tickets.Ticket;
 
-public class UndoAddCommentCommand implements Command {
+public final class UndoAddCommentCommand implements Command {
     public UndoAddCommentCommand() { }
 
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Ticket ticket;
@@ -23,7 +23,8 @@ public class UndoAddCommentCommand implements Command {
                 return null;
             }
             if (ticket.getReportedBy().isEmpty()) {
-                throw new IllegalArgumentException("Comments are not allowed on anonymous tickets.");
+                throw new IllegalArgumentException(
+                        "Comments are not allowed on anonymous tickets.");
             }
             if (!ticket.getComments().isEmpty()) {
                 ticket.getComments().removeLast();

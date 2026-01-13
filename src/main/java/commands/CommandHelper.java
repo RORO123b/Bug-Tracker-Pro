@@ -185,7 +185,12 @@ public final class CommandHelper {
         return milestoneNode;
     }
 
-    public static ObjectNode createActionNode(Action action) {
+    /**
+     * Creates an ObjectNode representation of an action
+     * @param action the action to convert
+     * @return an ObjectNode containing action details
+     */
+    public static ObjectNode createActionNode(final Action action) {
         ObjectNode actionNode = MAPPER.createObjectNode();
 
         if (action.getAction().equals("STATUS_CHANGED")) {

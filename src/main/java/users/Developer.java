@@ -12,7 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Developer extends User {
+public final class Developer extends User {
     private String hireDate;
     private ExpertiseArea expertiseArea;
     private String seniority;
@@ -40,6 +40,10 @@ public class Developer extends User {
         assignedTickets = new ArrayList<>();
     }
 
+    /**
+     * Adds a ticket to the assigned list and sorts it
+     * @param ticket the ticket to add
+     */
     public void addTicket(final Ticket ticket) {
         assignedTickets.add(ticket);
 
@@ -50,12 +54,19 @@ public class Developer extends User {
         );
     }
 
+    /**
+     * Removes a ticket from the assigned list.
+     * @param ticket the ticket to remove
+     */
     public void removeTicket(final Ticket ticket) {
-        if (assignedTickets.contains(ticket)) {
-            assignedTickets.remove(ticket);
-        }
+        assignedTickets.remove(ticket);
     }
 
+    /**
+     * Checks if the developer can handle a specific expertise area
+     * @param ticketExpertise the expertise area of the ticket
+     * @return true if handleable, false otherwise
+     */
     public boolean canHandleExpertise(final ExpertiseArea ticketExpertise) {
         if (this.expertiseArea == ExpertiseArea.FULLSTACK) {
             return true;
@@ -63,21 +74,26 @@ public class Developer extends User {
         if (this.expertiseArea == ticketExpertise) {
             return true;
         }
-        if (this.expertiseArea == ExpertiseArea.FRONTEND 
-            && ticketExpertise == ExpertiseArea.DESIGN) {
+        if (this.expertiseArea == ExpertiseArea.FRONTEND
+                && ticketExpertise == ExpertiseArea.DESIGN) {
             return true;
         }
-        if (this.expertiseArea == ExpertiseArea.DESIGN 
-            && ticketExpertise == ExpertiseArea.FRONTEND) {
+        if (this.expertiseArea == ExpertiseArea.DESIGN
+                && ticketExpertise == ExpertiseArea.FRONTEND) {
             return true;
         }
-        if (this.expertiseArea == ExpertiseArea.BACKEND 
-            && ticketExpertise == ExpertiseArea.DB) {
+        if (this.expertiseArea == ExpertiseArea.BACKEND
+                && ticketExpertise == ExpertiseArea.DB) {
             return true;
         }
         return false;
     }
 
+    /**
+     * Checks if the developer can handle a specific business priority based on seniority
+     * @param ticketPriority the priority level
+     * @return true if handleable, false otherwise
+     */
     public boolean canHandlePriority(final BusinessPriority ticketPriority) {
         if ("SENIOR".equals(this.seniority)) {
             return true;
@@ -86,8 +102,8 @@ public class Developer extends User {
             return ticketPriority != BusinessPriority.CRITICAL;
         }
         if ("JUNIOR".equals(this.seniority)) {
-            return ticketPriority == BusinessPriority.LOW 
-                || ticketPriority == BusinessPriority.MEDIUM;
+            return ticketPriority == BusinessPriority.LOW
+                    || ticketPriority == BusinessPriority.MEDIUM;
         }
         return false;
     }
