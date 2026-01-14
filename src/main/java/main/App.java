@@ -126,6 +126,9 @@ public final class App {
                 case "search":
                     invoker.setCommand(new SearchCommand());
                     break;
+                case "viewNotifications":
+                    invoker.setCommand(new ViewNotificationsCommand());
+                    break;
                 default:
                     invoker.setCommand(new LostInvestorsCommand());
                     break;

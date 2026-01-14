@@ -49,15 +49,6 @@ public final class AppCenter {
     private void updateMilestones(final LocalDate currentDate) {
         for (Milestone milestone : milestones) {
             milestone.checkBusinessPriority(currentDate);
-            boolean ok = true;
-            for (Ticket ticket : milestone.getTickets()) {
-                if (ticket.getStatus() != TicketStatus.CLOSED) {
-                    ok = false;
-                }
-            }
-            if (ok) {
-                milestone.setStatus("COMPLETED");
-            }
             milestone.calculateOverdueBy(currentDate);
             milestone.calculateDaysUntilDue(currentDate);
         }

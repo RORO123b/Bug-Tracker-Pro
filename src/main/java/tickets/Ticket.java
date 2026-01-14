@@ -6,8 +6,12 @@ import enums.TicketStatus;
 import enums.TicketType;
 import lombok.Getter;
 import lombok.Setter;
+import main.AppCenter;
+import milestones.Milestone;
 import tickets.action.Action;
+import users.Developer;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,13 +55,35 @@ public abstract class Ticket {
     /**
      * Changes the ticket status to the next status in the workflow
      */
-    public final void changeStatus() {
+    public final void changeStatus(LocalDate timestamp) {
         if (status == TicketStatus.OPEN) {
             status = TicketStatus.IN_PROGRESS;
         } else if (status == TicketStatus.IN_PROGRESS) {
             status = TicketStatus.RESOLVED;
         } else if (status == TicketStatus.RESOLVED) {
             status = TicketStatus.CLOSED;
+            boolean ok = true;
+            AppCenter appCenter = AppCenter.getInstance();
+            Milestone milestone = appCenter.getMilestoneByTicketID(id);
+            for (Ticket ticket : milestone.getTickets()) {
+                if (ticket.getStatus() != TicketStatus.CLOSED) {
+                    ok = false;
+                }
+            }
+            if (ok) {
+                milestone.setStatus("COMPLETED");
+                for (Milestone blockedMilestone : milestone.getBlockingFor()) {
+                    blockedMilestone.setStatus("ACTIVE");
+                    for (String dev : blockedMilestone.getAssignedDevs()) {
+                        Developer developer = (Developer) appCenter.getUserByUsername(dev);
+                        if (blockedMilestone.getDueDate().isBefore(timestamp)) {
+                            developer.addNotification("Milestone " + blockedMilestone.getName() + " was unblocked after due date. All active tickets are now CRITICAL.");
+                        } else {
+                            developer.addNotification("Milestone " + blockedMilestone.getName() + " is now unblocked as ticket " + id + " has been CLOSED.");
+                        }
+                    }
+                }
+            }
         }
     }
 

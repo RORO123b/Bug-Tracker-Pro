@@ -27,7 +27,7 @@ public final class ChangeStatusCommand implements Command {
                     .by(command.getUsername())
                     .timestamp(command.getTimestamp())
                     .build());
-            ticket.changeStatus();
+            ticket.changeStatus(command.getTimestamp());
             ticket.getHistory().getLast().setNewStatus(ticket.getStatus().toString());
         } catch (IllegalArgumentException e) {
             ObjectNode error = mapper.createObjectNode();

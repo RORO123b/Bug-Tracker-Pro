@@ -6,6 +6,7 @@ import enums.TicketStatus;
 import lombok.Getter;
 import lombok.Setter;
 import main.AppCenter;
+import users.Developer;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -48,11 +49,17 @@ public final class Milestone {
         this.name = name;
         this.dueDate = dueDate;
         this.assignedDevs = new ArrayList<>(assignedDevs);
+
+        AppCenter appCenter = AppCenter.getInstance();
+        for (String dev : assignedDevs) {
+            Developer developer = (Developer) appCenter.getUserByUsername(dev);
+            developer.addNotification("New milestone " + name + " has been created with due date " + dueDate + ".");
+        }
+
         this.createdAt = createdAt;
         lastDayUpdated = createdAt;
         this.createdBy = createdBy;
 
-        AppCenter appCenter = AppCenter.getInstance();
         this.tickets = new ArrayList<>();
         for (Integer ticketId : tickets) {
             for (Ticket ticket : appCenter.getTickets()) {
@@ -81,7 +88,7 @@ public final class Milestone {
         if (blocked) {
             return;
         }
-
+        AppCenter appCenter = AppCenter.getInstance();
         boolean updated = false;
         long daysDiff = ChronoUnit.DAYS.between(lastDayUpdated, nowDate) + 1;
         for (int i = BUSINESS_PRIORITY_UPDATE_INTERVAL; i <= (int) daysDiff;
@@ -94,7 +101,11 @@ public final class Milestone {
         if (updated) {
             lastDayUpdated = nowDate;
         }
-        if (((int) ChronoUnit.DAYS.between(nowDate, dueDate)) <= 1) {
+        if (((int) ChronoUnit.DAYS.between(nowDate, dueDate)) == 1) {
+            for (String dev : assignedDevs) {
+                Developer developer = (Developer) appCenter.getUserByUsername(dev);
+                developer.addNotification("Milestone " + name + " is due tomorrow. All unresolved tickets are now CRITICAL.");
+            }
             for (Ticket ticket : tickets) {
                 ticket.setBusinessPriority(BusinessPriority.CRITICAL);
             }

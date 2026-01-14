@@ -19,9 +19,11 @@ public final class Developer extends User {
     private BusinessPriority businessPriority;
     private List<Ticket> assignedTickets;
     private double performanceScore;
+    private List<String> notifications;
 
     public Developer() {
         assignedTickets = new ArrayList<>();
+        notifications = new ArrayList<>();
     }
 
     public Developer(final String username,
@@ -38,6 +40,7 @@ public final class Developer extends User {
         this.expertiseArea = expertiseArea;
         this.seniority = seniority;
         assignedTickets = new ArrayList<>();
+        notifications = new ArrayList<>();
     }
 
     /**
@@ -106,5 +109,9 @@ public final class Developer extends User {
                     || ticketPriority == BusinessPriority.MEDIUM;
         }
         return false;
+    }
+
+    public void addNotification(String notification) {
+        notifications.add(notification);
     }
 }
