@@ -34,8 +34,8 @@ public final class CommandHelper {
                 ? ticket.getBusinessPriority().toString() : "");
         ticketNode.put("status", ticket.getStatus() != null ? ticket.getStatus().toString() : "");
         ticketNode.put("createdAt", ticket.getCreatedAt() != null ? ticket.getCreatedAt() : "");
-        ticketNode.put("assignedAt", ticket.getAssignedAt() != null ? ticket.getAssignedAt() : "");
-        ticketNode.put("solvedAt", ticket.getSolvedAt() != null ? ticket.getSolvedAt() : "");
+        ticketNode.put("assignedAt", ticket.getAssignedAt() != null ? ticket.getAssignedAt().toString() : "");
+        ticketNode.put("solvedAt", ticket.getSolvedAt() != null ? ticket.getSolvedAt().toString() : "");
         ticketNode.put("assignedTo", ticket.getAssignedTo() != null ? ticket.getAssignedTo() : "");
         ticketNode.put("reportedBy", ticket.getReportedBy() != null ? ticket.getReportedBy() : "");
 
@@ -71,7 +71,7 @@ public final class CommandHelper {
                 ? ticket.getBusinessPriority().toString() : "");
         ticketNode.put("status", ticket.getStatus() != null ? ticket.getStatus().toString() : "");
         ticketNode.put("createdAt", ticket.getCreatedAt() != null ? ticket.getCreatedAt() : "");
-        ticketNode.put("assignedAt", ticket.getAssignedAt() != null ? ticket.getAssignedAt() : "");
+        ticketNode.put("assignedAt", ticket.getAssignedAt() != null ? ticket.getAssignedAt().toString() : "");
         ticketNode.put("reportedBy", ticket.getReportedBy() != null ? ticket.getReportedBy() : "");
 
         ArrayNode commentsArray = MAPPER.createArrayNode();

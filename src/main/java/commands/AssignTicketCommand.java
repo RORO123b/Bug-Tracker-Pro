@@ -67,7 +67,7 @@ public final class AssignTicketCommand implements Command {
                         + " from blocked milestone " + milestone.getName() + ".");
             }
             dev.addTicket(ticket);
-            ticket.setAssignedAt(command.getTimestamp().toString());
+            ticket.setAssignedAt(command.getTimestamp());
             ticket.setAssignedTo(dev.getUsername());
             ticket.setStatus(TicketStatus.IN_PROGRESS);
             ticket.getHistory().add(new ActionBuilder()

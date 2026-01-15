@@ -76,7 +76,7 @@ public final class SearchCommand implements Command {
                 ticketNode.put("createdAt", ticket.getCreatedAt() != null
                         ? ticket.getCreatedAt() : "");
                 ticketNode.put("solvedAt", ticket.getSolvedAt() != null
-                        ? ticket.getSolvedAt() : "");
+                        ? ticket.getSolvedAt().toString() : "");
                 ticketNode.put("reportedBy", ticket.getReportedBy() != null
                         ? ticket.getReportedBy() : "");
 

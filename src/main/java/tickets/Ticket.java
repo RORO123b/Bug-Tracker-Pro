@@ -12,6 +12,7 @@ import tickets.action.Action;
 import users.Developer;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +28,13 @@ public abstract class Ticket {
     protected String description;
     protected String reportedBy;
     protected String createdAt;
-    protected String solvedAt;
-    protected String assignedAt;
+    protected LocalDate solvedAt;
+    protected LocalDate assignedAt;
     protected String assignedTo;
     protected List<Comment> comments;
     protected List<Action> history;
     protected List<String> matchingWords;
+    protected double daysToResolve;
 
     public Ticket() {
         comments = new ArrayList<>();
@@ -60,8 +62,11 @@ public abstract class Ticket {
             status = TicketStatus.IN_PROGRESS;
         } else if (status == TicketStatus.IN_PROGRESS) {
             status = TicketStatus.RESOLVED;
+            solvedAt = timestamp;
+            daysToResolve = (double) ChronoUnit.DAYS.between(assignedAt, timestamp) + 1;
         } else if (status == TicketStatus.RESOLVED) {
             status = TicketStatus.CLOSED;
+            daysToResolve = (double) ChronoUnit.DAYS.between(assignedAt, timestamp) + 1;
             boolean ok = true;
             AppCenter appCenter = AppCenter.getInstance();
             Milestone milestone = appCenter.getMilestoneByTicketID(id);
@@ -111,4 +116,10 @@ public abstract class Ticket {
         }
         return false;
     }
+
+    public abstract Double calculateImpactFinal();
+
+    public abstract Double calculateRiskFinal();
+
+    public abstract Double calculateEfficiencyFinal();
 }

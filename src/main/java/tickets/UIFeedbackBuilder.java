@@ -25,7 +25,7 @@ public final class UIFeedbackBuilder extends TicketBuilder<UIFeedback, UIFeedbac
      * @return this builder
      */
     public UIFeedbackBuilder uiElementId(final String uiElementId) {
-        ticket.uiElementId = uiElementId;
+        ticket.setUiElementId(uiElementId);
         return this;
     }
 
@@ -36,7 +36,7 @@ public final class UIFeedbackBuilder extends TicketBuilder<UIFeedback, UIFeedbac
      * @return this builder
      */
     public UIFeedbackBuilder businessValue(final BusinessValue value) {
-        ticket.businessValue = value;
+        ticket.setBusinessValue(value);
         return this;
     }
 
@@ -47,7 +47,7 @@ public final class UIFeedbackBuilder extends TicketBuilder<UIFeedback, UIFeedbac
      * @return this builder
      */
     public UIFeedbackBuilder usabilityScore(final Integer score) {
-        ticket.usabilityScore = score;
+        ticket.setUsabilityScore(score);
         return this;
     }
 
@@ -58,7 +58,7 @@ public final class UIFeedbackBuilder extends TicketBuilder<UIFeedback, UIFeedbac
      * @return this builder
      */
     public UIFeedbackBuilder screenshotUrl(final String url) {
-        ticket.screenshotUrl = url;
+        ticket.setScreenshotUrl(url);
         return this;
     }
 
@@ -69,7 +69,7 @@ public final class UIFeedbackBuilder extends TicketBuilder<UIFeedback, UIFeedbac
      * @return this builder
      */
     public UIFeedbackBuilder suggestedFix(final String fix) {
-        ticket.suggestedFix = fix;
+        ticket.setSuggestedFix(fix);
         return this;
     }
 

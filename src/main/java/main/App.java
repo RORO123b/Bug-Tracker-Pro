@@ -129,6 +129,15 @@ public final class App {
                 case "viewNotifications":
                     invoker.setCommand(new ViewNotificationsCommand());
                     break;
+                case "generateCustomerImpactReport":
+                    invoker.setCommand(new GenerateCustomerImpactReportCommand());
+                    break;
+                case "generateTicketRiskReport":
+                    invoker.setCommand(new GenerateTicketRiskReportCommand());
+                    break;
+                case "generateResolutionEfficiencyReport":
+                    invoker.setCommand(new GenerateResolutionEfficiencyReportCommand());
+                    break;
                 default:
                     invoker.setCommand(new LostInvestorsCommand());
                     break;

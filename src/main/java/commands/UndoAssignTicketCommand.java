@@ -31,7 +31,7 @@ public final class UndoAssignTicketCommand implements Command {
 
             dev.removeTicket(ticket);
             ticket.setStatus(TicketStatus.OPEN);
-            ticket.setAssignedAt("");
+            ticket.setAssignedAt(null);
             ticket.setAssignedTo("");
             ticket.getHistory().add(new ActionBuilder()
                     .action("DE-ASSIGNED")

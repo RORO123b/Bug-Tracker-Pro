@@ -1,12 +1,9 @@
 package main;
 
-import enums.BusinessPriority;
-import enums.ExpertiseArea;
-import enums.TicketStatus;
+import enums.*;
 import milestones.Milestone;
 import tickets.Ticket;
 import users.User;
-import enums.Phases;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -162,5 +159,79 @@ public final class AppCenter {
             }
         }
         return null;
+    }
+
+    public List<Ticket> getOpenInProgressTickets() {
+        List<Ticket> openInProgressTickets = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            if (ticket.getStatus() == TicketStatus.OPEN ||  ticket.getStatus() == TicketStatus.IN_PROGRESS) {
+                openInProgressTickets.add(ticket);
+            }
+        }
+
+        return openInProgressTickets;
+    }
+
+    public List<Ticket> getResolvedClosedTickets() {
+        List<Ticket> resolvedClosedTickets = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            if (ticket.getStatus() == TicketStatus.RESOLVED ||  ticket.getStatus() == TicketStatus.CLOSED) {
+                resolvedClosedTickets.add(ticket);
+            }
+        }
+
+        return resolvedClosedTickets;
+    }
+
+    public List<Ticket> getTicketsByType(final TicketType type, final List<Ticket> tickets) {
+        List<Ticket> result = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            if (ticket.getType().equals(type)) {
+                result.add(ticket);
+            }
+        }
+        return result;
+    }
+
+    public List<Ticket> getTicketsByPriority(final BusinessPriority priority, final List<Ticket> tickets) {
+        List<Ticket> result = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            if (ticket.getBusinessPriority() == priority) {
+                result.add(ticket);
+            }
+        }
+        return result;
+    }
+
+    public double calculateAverageImpact(List<Ticket> tickets) {
+        List<Double> scores = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            scores.add(ticket.calculateImpactFinal());
+        }
+        return scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+    }
+
+    public String calculateAverageRisk(List<Ticket> tickets) {
+        List<Double> scores = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            scores.add(ticket.calculateRiskFinal());
+        }
+        double res = scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        if (res < 24) {
+            return "NEGLIGIBLE";
+        } else if (res < 49) {
+            return "MODERATE";
+        } else if (res < 74) {
+            return "SIGNIFICANT";
+        }
+        return "MAJOR";
+    }
+
+    public Double calculateEfficiency(List<Ticket> tickets) {
+        List<Double> scores = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            scores.add(ticket.calculateEfficiencyFinal());
+        }
+        return scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
     }
 }
