@@ -234,4 +234,27 @@ public final class AppCenter {
         }
         return scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
     }
+
+    public String getAppStability() {
+        if (getOpenInProgressTickets().isEmpty()) {
+            return "STABLE";
+        }
+
+        if (calculateAverageRisk(getTicketsByType(TicketType.BUG, getOpenInProgressTickets())).equals("NEGLIGIBLE")
+        && calculateAverageRisk(getTicketsByType(TicketType.FEATURE_REQUEST, getOpenInProgressTickets())).equals("NEGLIGIBLE")
+        && calculateAverageRisk(getTicketsByType(TicketType.UI_FEEDBACK, getOpenInProgressTickets())).equals("NEGLIGIBLE")
+        && calculateAverageImpact(getTicketsByType(TicketType.BUG, getOpenInProgressTickets())) < 50
+        && calculateAverageImpact(getTicketsByType(TicketType.FEATURE_REQUEST, getOpenInProgressTickets())) < 50
+        && calculateAverageImpact(getTicketsByType(TicketType.UI_FEEDBACK, getOpenInProgressTickets())) < 50) {
+            return "STABLE";
+        }
+
+        if (calculateAverageRisk(getTicketsByType(TicketType.BUG, getOpenInProgressTickets())).equals("SIGNIFICANT")
+            || calculateAverageRisk(getTicketsByType(TicketType.FEATURE_REQUEST, getOpenInProgressTickets())).equals("SIGNIFICANT")
+            || calculateAverageRisk(getTicketsByType(TicketType.UI_FEEDBACK, getOpenInProgressTickets())).equals("SIGNIFICANT")) {
+            return "UNSTABLE";
+        }
+
+        return "PARTIALLY STABLE";
+    }
 }

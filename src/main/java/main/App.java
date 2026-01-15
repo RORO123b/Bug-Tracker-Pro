@@ -138,6 +138,9 @@ public final class App {
                 case "generateResolutionEfficiencyReport":
                     invoker.setCommand(new GenerateResolutionEfficiencyReportCommand());
                     break;
+                case "appStabilityReport":
+                    invoker.setCommand(new AppStabilityReportCommand());
+                    break;
                 default:
                     invoker.setCommand(new LostInvestorsCommand());
                     break;
