@@ -95,7 +95,9 @@ public final class Milestone {
              i += BUSINESS_PRIORITY_UPDATE_INTERVAL) {
             updated = true;
             for (Ticket ticket : tickets) {
-                ticket.updateBusinessPriority();
+                if (ticket.getStatus() != TicketStatus.CLOSED) {
+                    ticket.updateBusinessPriority();
+                }
             }
         }
         if (updated) {
@@ -107,7 +109,9 @@ public final class Milestone {
                 developer.addNotification("Milestone " + name + " is due tomorrow. All unresolved tickets are now CRITICAL.");
             }
             for (Ticket ticket : tickets) {
-                ticket.setBusinessPriority(BusinessPriority.CRITICAL);
+                if (ticket.getStatus() != TicketStatus.CLOSED) {
+                    ticket.setBusinessPriority(BusinessPriority.CRITICAL);
+                }
             }
         }
     }

@@ -13,6 +13,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import users.Developer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public final class CommandHelper {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -172,10 +176,15 @@ public final class CommandHelper {
                     ? dev.getUsername() : "");
 
             ArrayNode assignedTicketsArray = MAPPER.createArrayNode();
+            List<Integer> ticketIds = new ArrayList<>();
             for (Ticket ticket : dev.getAssignedTickets()) {
                 if (milestone.getTickets().contains(ticket)) {
-                    assignedTicketsArray.add(ticket.getId());
+                    ticketIds.add(ticket.getId());
                 }
+            }
+            Collections.sort(ticketIds);
+            for (Integer ticketId : ticketIds) {
+                assignedTicketsArray.add(ticketId);
             }
             repartitionNode.set("assignedTickets", assignedTicketsArray);
             repartitionArray.add(repartitionNode);

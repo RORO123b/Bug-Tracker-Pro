@@ -23,6 +23,7 @@ public abstract class Ticket {
     protected TicketType type;
     protected String title;
     protected BusinessPriority businessPriority;
+    protected BusinessPriority initialBusinessPriority;
     protected TicketStatus status;
     protected ExpertiseArea expertiseArea;
     protected String description;
@@ -45,6 +46,9 @@ public abstract class Ticket {
      * Updates the business priority by increasing it one level.
      */
     public final void updateBusinessPriority() {
+        if (initialBusinessPriority == null) {
+            initialBusinessPriority = businessPriority;
+        }
         if (businessPriority == BusinessPriority.LOW) {
             businessPriority = BusinessPriority.MEDIUM;
         } else if (businessPriority == BusinessPriority.MEDIUM) {

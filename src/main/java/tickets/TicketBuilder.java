@@ -49,9 +49,11 @@ public abstract class TicketBuilder<T extends Ticket, B extends TicketBuilder<T,
     public final B businessPriority(final BusinessPriority priority) {
         if (ticket.reportedBy.equals("")) {
             ticket.businessPriority = BusinessPriority.LOW;
+            ticket.initialBusinessPriority = BusinessPriority.LOW;
             return self();
         }
         ticket.businessPriority = priority;
+        ticket.initialBusinessPriority = priority;
         return self();
     }
 
