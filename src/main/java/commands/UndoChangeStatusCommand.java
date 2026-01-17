@@ -15,7 +15,7 @@ public final class UndoChangeStatusCommand implements Command {
     public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
-            Ticket ticket = appCenter.getTickets().get(command.getTicketID());
+            Ticket ticket = appCenter.getTicketById(command.getTicketID());
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
             if (!dev.getAssignedTickets().contains(ticket)) {
                 throw new IllegalArgumentException("Ticket " + ticket.getId()

@@ -23,6 +23,11 @@ public final class ReportTicketCommand implements Command {
     public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
+            if (appCenter.getUsers().stream().noneMatch(user -> user.getUsername()
+                    .equals(command.getUsername()))) {
+                throw new IllegalArgumentException("The user " + command.getUsername()
+                        + " does not exist.");
+            }
             if (appCenter.getCurrentPeriod() != Phases.TESTING) {
                 throw new IllegalStateException("Tickets can only be reported "
                         + "during testing phases.");
@@ -31,11 +36,6 @@ public final class ReportTicketCommand implements Command {
                     && !command.getParams().getType().equals(TicketType.BUG)) {
                 throw new IllegalArgumentException("Anonymous reports are only "
                         + "allowed for tickets of type BUG.");
-            }
-            if (appCenter.getUsers().stream().noneMatch(user -> user.getUsername()
-                    .equals(command.getUsername()))) {
-                throw new IllegalArgumentException("The user " + command.getUsername()
-                        + " does not exist.");
             }
             Ticket ticket;
             if (command.getParams().getType().equals(TicketType.BUG)) {

@@ -70,7 +70,6 @@ public abstract class Ticket {
             daysToResolve = (double) ChronoUnit.DAYS.between(assignedAt, timestamp) + 1;
         } else if (status == TicketStatus.RESOLVED) {
             status = TicketStatus.CLOSED;
-            daysToResolve = (double) ChronoUnit.DAYS.between(assignedAt, timestamp) + 1;
             boolean ok = true;
             AppCenter appCenter = AppCenter.getInstance();
             Milestone milestone = appCenter.getMilestoneByTicketID(id);
@@ -82,11 +81,18 @@ public abstract class Ticket {
             if (ok) {
                 milestone.setStatus("COMPLETED");
                 for (Milestone blockedMilestone : milestone.getBlockingFor()) {
+                    blockedMilestone.setBlocked(false);
                     blockedMilestone.setStatus("ACTIVE");
+                    blockedMilestone.setLastDayUpdated(timestamp);
                     for (String dev : blockedMilestone.getAssignedDevs()) {
                         Developer developer = (Developer) appCenter.getUserByUsername(dev);
                         if (blockedMilestone.getDueDate().isBefore(timestamp)) {
                             developer.addNotification("Milestone " + blockedMilestone.getName() + " was unblocked after due date. All active tickets are now CRITICAL.");
+                            for (Ticket t : blockedMilestone.getTickets()) {
+                                if (t.getStatus() != TicketStatus.CLOSED) {
+                                    t.setBusinessPriority(BusinessPriority.CRITICAL);
+                                }
+                            }
                         } else {
                             developer.addNotification("Milestone " + blockedMilestone.getName() + " is now unblocked as ticket " + id + " has been CLOSED.");
                         }

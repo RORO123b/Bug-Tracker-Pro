@@ -144,6 +144,9 @@ public final class App {
                 case "generatePerformanceReport":
                     invoker.setCommand(new GeneratePerformanceReportCommand());
                     break;
+                case "startTestingPhase":
+                    invoker.setCommand(new StartTestingPhaseCommand());
+                    break;
                 default:
                     invoker.setCommand(new LostInvestorsCommand());
                     break;

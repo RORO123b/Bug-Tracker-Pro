@@ -23,8 +23,12 @@ public final class KeywordFilterStrategy implements FilterStrategy<Ticket> {
         Set<String> found = new TreeSet<>();
         for (String kw : keywords) {
             String lowerKw = kw.toLowerCase();
-            if (title.contains(lowerKw) || description.contains(lowerKw)) {
-                found.add(lowerKw);
+            String matchingWord = findMatchingWord(title, lowerKw);
+            if (matchingWord == null) {
+                matchingWord = findMatchingWord(description, lowerKw);
+            }
+            if (matchingWord != null) {
+                found.add(matchingWord);
             }
         }
 
@@ -33,5 +37,18 @@ public final class KeywordFilterStrategy implements FilterStrategy<Ticket> {
             return true;
         }
         return false;
+    }
+
+    private String findMatchingWord(final String text, final String keyword) {
+        if (!text.contains(keyword)) {
+            return null;
+        }
+        String[] words = text.split(" ");
+        for (String word : words) {
+            if (word.contains(keyword)) {
+                return word;
+            }
+        }
+        return keyword;
     }
 }

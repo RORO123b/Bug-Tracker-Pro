@@ -13,12 +13,7 @@ public final class UndoAddCommentCommand implements Command {
     public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
-            Ticket ticket;
-            try {
-                ticket = appCenter.getTickets().get(command.getTicketID());
-            } catch (IndexOutOfBoundsException e) {
-                return null;
-            }
+            Ticket ticket = appCenter.getTicketById(command.getTicketID());
             if (ticket == null) {
                 return null;
             }

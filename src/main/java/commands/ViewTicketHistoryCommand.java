@@ -20,6 +20,13 @@ public final class ViewTicketHistoryCommand implements Command {
         commandNode.put("command", command.getCommand());
         commandNode.put("username", user.getUsername());
         commandNode.put("timestamp", command.getTimestamp().toString());
+
+        if (user.getRole().equals("REPORTER")) {
+            commandNode.put("error", "The user does not have permission to execute this command: "
+                    + "required role DEVELOPER, MANAGER; user role REPORTER.");
+            return commandNode;
+        }
+
         ArrayNode history = mapper.createArrayNode();
         if (user.getRole().equals("MANAGER")) {
             for (Milestone milestone : appCenter.getMilestones()) {

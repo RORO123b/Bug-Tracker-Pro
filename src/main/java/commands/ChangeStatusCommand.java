@@ -2,6 +2,7 @@ package commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import enums.TicketStatus;
 import fileio.CommandInput;
 import main.AppCenter;
 import tickets.Ticket;
@@ -15,11 +16,18 @@ public final class ChangeStatusCommand implements Command {
     public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
         try {
             AppCenter appCenter = AppCenter.getInstance();
-            Ticket ticket = appCenter.getTickets().get(command.getTicketID());
+            Ticket ticket = appCenter.getTicketById(command.getTicketID());
+            if (ticket == null) {
+                return null;
+            }
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
+
             if (!dev.getAssignedTickets().contains(ticket)) {
                 throw new IllegalArgumentException("Ticket " + ticket.getId()
                         + " is not assigned to developer " + dev.getUsername() + ".");
+            }
+            if (ticket.getStatus() == TicketStatus.CLOSED) {
+                return null;
             }
             ticket.getHistory().add(new ActionBuilder()
                     .action("STATUS_CHANGED")

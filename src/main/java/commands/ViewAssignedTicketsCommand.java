@@ -7,6 +7,7 @@ import fileio.CommandInput;
 import main.AppCenter;
 import tickets.Ticket;
 import users.Developer;
+import users.User;
 
 import java.util.List;
 
@@ -27,7 +28,15 @@ public final class ViewAssignedTicketsCommand implements Command {
         commandNode.put("timestamp", command.getTimestamp().toString());
 
         AppCenter appCenter = AppCenter.getInstance();
-        Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
+        User user = appCenter.getUserByUsername(command.getUsername());
+
+        if (!(user.getRole().equals("DEVELOPER"))) {
+            commandNode.put("error", "The user does not have permission to execute this command: "
+                    + "required role DEVELOPER; user role " + user.getRole() + ".");
+            return commandNode;
+        }
+
+        Developer dev = (Developer) user;
         ArrayNode ticketsArray = mapper.createArrayNode();
         List<Ticket> assignedTickets = dev.getAssignedTickets();
 

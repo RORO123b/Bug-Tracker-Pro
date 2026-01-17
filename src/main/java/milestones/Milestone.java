@@ -1,6 +1,7 @@
 package milestones;
 
 import tickets.Ticket;
+import tickets.action.ActionBuilder;
 import enums.BusinessPriority;
 import enums.TicketStatus;
 import lombok.Getter;
@@ -31,12 +32,14 @@ public final class Milestone {
     private LocalDate lastDayUpdated;
     private int overdueBy;
     private int daysUntilDue;
+    private boolean dueTomorrowNotified;
 
     public Milestone() {
         blocked = true;
         blockingFor = new ArrayList<>();
         assignedDevs = new ArrayList<>();
         tickets = new ArrayList<>();
+        dueTomorrowNotified = false;
     }
 
     public Milestone(final String name,
@@ -89,30 +92,56 @@ public final class Milestone {
             return;
         }
         AppCenter appCenter = AppCenter.getInstance();
-        boolean updated = false;
-        long daysDiff = ChronoUnit.DAYS.between(lastDayUpdated, nowDate) + 1;
-        for (int i = BUSINESS_PRIORITY_UPDATE_INTERVAL; i <= (int) daysDiff;
-             i += BUSINESS_PRIORITY_UPDATE_INTERVAL) {
-            updated = true;
+        int totalDays = (int) ChronoUnit.DAYS.between(createdAt, nowDate);
+        int lastUpdateDays = (int) ChronoUnit.DAYS.between(createdAt, lastDayUpdated);
+
+        int currentInterval = (int) (totalDays / BUSINESS_PRIORITY_UPDATE_INTERVAL);
+        int lastInterval = (int) (lastUpdateDays / BUSINESS_PRIORITY_UPDATE_INTERVAL);
+
+        for (int i = lastInterval + 1; i <= currentInterval; i++) {
             for (Ticket ticket : tickets) {
                 if (ticket.getStatus() != TicketStatus.CLOSED) {
                     ticket.updateBusinessPriority();
+                    checkAndRemoveFromDev(ticket, appCenter, nowDate);
                 }
             }
         }
-        if (updated) {
+        if (currentInterval > lastInterval) {
             lastDayUpdated = nowDate;
         }
-        if (((int) ChronoUnit.DAYS.between(nowDate, dueDate)) == 1) {
+        if (((int) ChronoUnit.DAYS.between(nowDate, dueDate)) == 1 && !dueTomorrowNotified) {
+            dueTomorrowNotified = true;
             for (String dev : assignedDevs) {
                 Developer developer = (Developer) appCenter.getUserByUsername(dev);
-                developer.addNotification("Milestone " + name + " is due tomorrow. All unresolved tickets are now CRITICAL.");
+                developer.addNotification("Milestone " + name
+                        + " is due tomorrow. All unresolved tickets are now CRITICAL.");
             }
             for (Ticket ticket : tickets) {
                 if (ticket.getStatus() != TicketStatus.CLOSED) {
                     ticket.setBusinessPriority(BusinessPriority.CRITICAL);
+                    checkAndRemoveFromDev(ticket, appCenter, nowDate);
                 }
             }
+        }
+    }
+
+    private void checkAndRemoveFromDev(final Ticket ticket, final AppCenter appCenter,
+                                       final LocalDate nowDate) {
+        if (ticket.getAssignedTo() == null || ticket.getAssignedTo().isEmpty()) {
+            return;
+        }
+        Developer dev = (Developer) appCenter.getUserByUsername(ticket.getAssignedTo());
+        if (!appCenter.requiredSeniority(ticket).contains(dev.getSeniority())) {
+            dev.removeTicket(ticket);
+            ticket.setStatus(TicketStatus.OPEN);
+            ticket.setAssignedTo("");
+            ticket.setAssignedAt(null);
+            ticket.getHistory().add(new ActionBuilder()
+                    .action("REMOVED_FROM_DEV")
+                    .removedDev(dev.getUsername())
+                    .by("system")
+                    .timestamp(nowDate)
+                    .build());
         }
     }
 

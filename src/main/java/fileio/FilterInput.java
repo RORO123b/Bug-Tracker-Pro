@@ -17,9 +17,11 @@ public class FilterInput {
     private BusinessPriority businessPriority;
     private String type;
     private LocalDate createdAfter;
+    private LocalDate createdBefore;
     private boolean availableForAssignment;
     private ExpertiseArea expertiseArea;
     private String seniority;
     private Double performanceScoreAbove;
+    private Double performanceScoreBelow;
     private ArrayList<String> keywords;
 }

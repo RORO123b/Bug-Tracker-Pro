@@ -17,6 +17,7 @@ public final class TicketSearchEngine {
         strategies.add(new PriorityFilterStrategy());
         strategies.add(new TypeFilterStrategy());
         strategies.add(new CreatedAfterFilterStrategy());
+        strategies.add(new CreatedBeforeFilterStrategy());
         strategies.add(new AvailabilityFilterStrategy(currentDev));
         strategies.add(new KeywordFilterStrategy());
     }

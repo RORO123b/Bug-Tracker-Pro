@@ -168,8 +168,31 @@ public final class CommandHelper {
         milestoneNode.put("completionPercentage", milestone.getCompletionPercentage());
 
         ArrayNode repartitionArray = MAPPER.createArrayNode();
-        for (String username : milestone.getAssignedDevs()) {
-            AppCenter appCenter = AppCenter.getInstance();
+        AppCenter appCenter = AppCenter.getInstance();
+
+        List<String> sortedDevs = new ArrayList<>(milestone.getAssignedDevs());
+        sortedDevs.sort((dev1, dev2) -> {
+            Developer d1 = (Developer) appCenter.getUserByUsername(dev1);
+            Developer d2 = (Developer) appCenter.getUserByUsername(dev2);
+            int count1 = 0;
+            int count2 = 0;
+            for (Ticket t : d1.getAssignedTickets()) {
+                if (milestone.getTickets().contains(t)) {
+                    count1++;
+                }
+            }
+            for (Ticket t : d2.getAssignedTickets()) {
+                if (milestone.getTickets().contains(t)) {
+                    count2++;
+                }
+            }
+            if (count1 != count2) {
+                return Integer.compare(count1, count2);
+            }
+            return dev1.compareTo(dev2);
+        });
+
+        for (String username : sortedDevs) {
             Developer dev = (Developer) appCenter.getUserByUsername(username);
             ObjectNode repartitionNode = MAPPER.createObjectNode();
             repartitionNode.put("developer", dev != null

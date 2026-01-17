@@ -80,13 +80,12 @@ public final class SearchCommand implements Command {
                 ticketNode.put("reportedBy", ticket.getReportedBy() != null
                         ? ticket.getReportedBy() : "");
 
-                if (filters != null && filters.getKeywords() != null
-                        && !filters.getKeywords().isEmpty()
-                        && ticket.getMatchingWords() != null
-                        && !ticket.getMatchingWords().isEmpty()) {
+                if (requester.getRole().equals("MANAGER")) {
                     ArrayNode matchingWordsArray = mapper.createArrayNode();
-                    for (String word : ticket.getMatchingWords()) {
-                        matchingWordsArray.add(word);
+                    if (ticket.getMatchingWords() != null) {
+                        for (String word : ticket.getMatchingWords()) {
+                            matchingWordsArray.add(word);
+                        }
                     }
                     ticketNode.set("matchingWords", matchingWordsArray);
                 }

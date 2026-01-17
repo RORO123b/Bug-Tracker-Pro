@@ -36,7 +36,7 @@ public final class AppCenter {
     private void checkTransition(final LocalDate currentDate) {
         if (currentPeriod == Phases.TESTING) {
             if ((int) ChronoUnit.DAYS.between(datePeriodStart, currentDate)
-                    + 1 >= TESTING_PHASE_DURATION) {
+                    + 1 > TESTING_PHASE_DURATION) {
                 currentPeriod = Phases.DEVELOPMENT;
                 datePeriodStart = currentDate;
             }
@@ -85,6 +85,19 @@ public final class AppCenter {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
                 return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param ticketId the ID of the ticket to search for
+     * @return the found Ticket or null
+     */
+    public Ticket getTicketById(final int ticketId) {
+        for (Ticket ticket : tickets) {
+            if (ticket.getId() == ticketId) {
+                return ticket;
             }
         }
         return null;
@@ -208,7 +221,7 @@ public final class AppCenter {
         for (Ticket ticket : tickets) {
             scores.add(ticket.calculateImpactFinal());
         }
-        return scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        return Math.round(scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0) * 100.0) / 100.0;
     }
 
     public String calculateAverageRisk(List<Ticket> tickets) {
@@ -232,7 +245,7 @@ public final class AppCenter {
         for (Ticket ticket : tickets) {
             scores.add(ticket.calculateEfficiencyFinal());
         }
-        return scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        return Math.round(scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0) * 100.0) / 100.0;
     }
 
     public String getAppStability() {

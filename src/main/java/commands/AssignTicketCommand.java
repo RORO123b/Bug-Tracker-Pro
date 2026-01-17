@@ -24,7 +24,16 @@ public final class AssignTicketCommand implements Command {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
-            Ticket ticket = appCenter.getTickets().get(command.getTicketID());
+            Ticket ticket = appCenter.getTicketById(command.getTicketID());
+
+            if (ticket == null) {
+                throw new IllegalArgumentException("Ticket " + command.getTicketID()
+                        + " does not exist.");
+            }
+
+            if (ticket.getStatus() != TicketStatus.OPEN) {
+                throw new IllegalStateException("Only OPEN tickets can be assigned.");
+            }
 
             if (!appCenter.requiredExpertiseAreas(ticket).contains(dev.getExpertiseArea())) {
                 String errorMessage = "Developer " + dev.getUsername()
@@ -48,10 +57,6 @@ public final class AssignTicketCommand implements Command {
                 errorMessage = errorMessage.substring(0, errorMessage.length() - 2);
                 errorMessage += "; Current: " + dev.getSeniority() + ".";
                 throw new IllegalArgumentException(errorMessage);
-            }
-
-            if (ticket.getStatus() != TicketStatus.OPEN) {
-                throw new IllegalStateException("Only OPEN tickets can be assigned.");
             }
 
             Milestone milestone = appCenter.getMilestoneByTicketID(ticket.getId());

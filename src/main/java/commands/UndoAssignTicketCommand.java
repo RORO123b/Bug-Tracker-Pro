@@ -23,7 +23,7 @@ public final class UndoAssignTicketCommand implements Command {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
-            Ticket ticket = appCenter.getTickets().get(command.getTicketID());
+            Ticket ticket = appCenter.getTicketById(command.getTicketID());
 
             if (ticket.getStatus() !=  TicketStatus.IN_PROGRESS) {
                 throw new IllegalStateException("Only IN_PROGRESS tickets can be unassigned.");

@@ -47,7 +47,7 @@ public final class CreateMilestoneCommand implements Command {
                     command.getUsername()
             ));
             for (Integer ticketId : command.getTickets()) {
-                appCenter.getTickets().get(ticketId).getHistory().add(new ActionBuilder()
+                appCenter.getTicketById(ticketId).getHistory().add(new ActionBuilder()
                         .action("ADDED_TO_MILESTONE")
                         .milestone(command.getName())
                         .by(command.getUsername())

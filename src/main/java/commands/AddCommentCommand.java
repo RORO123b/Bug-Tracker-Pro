@@ -18,10 +18,8 @@ public final class AddCommentCommand implements Command {
         final int minCommentLength = 10;
         try {
             AppCenter appCenter = AppCenter.getInstance();
-            Ticket ticket;
-            try {
-                ticket = appCenter.getTickets().get(command.getTicketID());
-            } catch (IndexOutOfBoundsException e) {
+            Ticket ticket = appCenter.getTicketById(command.getTicketID());
+            if (ticket == null) {
                 return null;
             }
             User user = appCenter.getUserByUsername(command.getUsername());
