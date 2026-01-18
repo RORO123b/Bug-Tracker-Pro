@@ -17,10 +17,12 @@ public class Bug extends Ticket {
     private String environment;
     private Integer errorCode;
 
-    private final static double MAX_VALUE_IMPACT = 48.0;
-    private final static double MAX_VALUE_RISK = 12.0;
-    private final static double MAX_VALUE_EFFICIENCY = 70.0;
-    private final static double PERCENTAGE = 100.0;
+    private static final double MAX_VALUE_IMPACT = 48.0;
+    private static final double MAX_VALUE_RISK = 12.0;
+    private static final double MAX_VALUE_EFFICIENCY = 70.0;
+    private static final double PERCENTAGE = 100.0;
+    private static final double EFFICIENCY_MULTIPLIER = 10.0;
+
     Bug() {
         super();
         type = TicketType.BUG;
@@ -28,17 +30,26 @@ public class Bug extends Ticket {
     }
 
     @Override
-    public Double calculateImpactFinal() {
-        return Math.round(Math.min(PERCENTAGE, (frequency.getValue() * businessPriority.getValue() * severity.getValue() * PERCENTAGE) / MAX_VALUE_IMPACT) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateImpactFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                (frequency.getValue() * businessPriority.getValue()
+                        * severity.getValue() * PERCENTAGE)
+                / MAX_VALUE_IMPACT) * PERCENTAGE) / PERCENTAGE;
     }
 
     @Override
-    public Double calculateRiskFinal() {
-        return Math.round(Math.min(PERCENTAGE, (frequency.getValue() * severity.getValue() * PERCENTAGE) / MAX_VALUE_RISK) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateRiskFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                (frequency.getValue() * severity.getValue()
+                        * PERCENTAGE) / MAX_VALUE_RISK)
+                * PERCENTAGE) / PERCENTAGE;
     }
 
     @Override
-    public Double calculateEfficiencyFinal() {
-        return Math.round(Math.min(PERCENTAGE, (frequency.getValue() + severity.getValue()) * 10.0 / daysToResolve * PERCENTAGE / MAX_VALUE_EFFICIENCY) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateEfficiencyFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                (frequency.getValue() + severity.getValue())
+                        * EFFICIENCY_MULTIPLIER / daysToResolve * PERCENTAGE
+                / MAX_VALUE_EFFICIENCY) * PERCENTAGE) / PERCENTAGE;
     }
 }

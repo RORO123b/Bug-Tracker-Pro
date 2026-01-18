@@ -13,7 +13,8 @@ public class ViewNotificationsCommand implements Command {
     public ViewNotificationsCommand() { }
 
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public final ObjectNode execute(final ObjectMapper mapper,
+                                     final CommandInput command) {
         ObjectNode commandNode = mapper.createObjectNode();
         commandNode.put("command", command.getCommand());
         commandNode.put("username", command.getUsername());

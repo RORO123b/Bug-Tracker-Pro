@@ -19,6 +19,7 @@ public class UIFeedback extends Ticket {
     private static final double MAX_VALUE_IMPACT = 100.0;
     private static final double MAX_VALUE_EFFICIENCY = 20.0;
     private static final double PERCENTAGE = 100.0;
+    private static final int USABILITY_OFFSET = 11;
 
     public UIFeedback() {
         super();
@@ -27,17 +28,25 @@ public class UIFeedback extends Ticket {
     }
 
     @Override
-    public Double calculateImpactFinal() {
-        return Math.round(Math.min(PERCENTAGE, (businessValue.getValue() * usabilityScore * PERCENTAGE) / MAX_VALUE_IMPACT) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateImpactFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                (businessValue.getValue() * usabilityScore
+                        * PERCENTAGE) / MAX_VALUE_IMPACT) * PERCENTAGE) / PERCENTAGE;
     }
 
     @Override
-    public Double calculateRiskFinal() {
-        return Math.round(Math.min(PERCENTAGE, ((11 - usabilityScore) * businessValue.getValue() * PERCENTAGE) / MAX_VALUE_RISK) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateRiskFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                ((USABILITY_OFFSET - usabilityScore)
+                        * businessValue.getValue() * PERCENTAGE)
+                / MAX_VALUE_RISK) * PERCENTAGE) / PERCENTAGE;
     }
 
     @Override
-    public Double calculateEfficiencyFinal() {
-        return Math.round(Math.min(PERCENTAGE, ((usabilityScore + businessValue.getValue()) / daysToResolve * PERCENTAGE) / MAX_VALUE_EFFICIENCY) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateEfficiencyFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                ((usabilityScore + businessValue.getValue())
+                        / daysToResolve * PERCENTAGE)
+                / MAX_VALUE_EFFICIENCY) * PERCENTAGE) / PERCENTAGE;
     }
 }

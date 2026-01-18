@@ -13,10 +13,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class GeneratePerformanceReportCommand implements Command {
+    private static final double PERCENT = 100.0;
+
     public GeneratePerformanceReportCommand() { }
 
     @Override
-    public ObjectNode execute(ObjectMapper mapper, CommandInput command) {
+    public final ObjectNode execute(final ObjectMapper mapper,
+                                     final CommandInput command) {
         ObjectNode commandNode = mapper.createObjectNode();
         AppCenter appCenter = AppCenter.getInstance();
         Manager manager = (Manager) appCenter.getUserByUsername(command.getUsername());
@@ -28,12 +31,19 @@ public class GeneratePerformanceReportCommand implements Command {
         List<String> sortedDevs = new ArrayList<>(manager.getSubordinates());
         Collections.sort(sortedDevs);
         for (String developer : sortedDevs) {
-            Developer dev = (Developer) appCenter.getUserByUsername(developer);
+            Developer dev =
+                    (Developer) appCenter.getUserByUsername(developer);
             ObjectNode developerNode = mapper.createObjectNode();
             developerNode.put("username", developer);
-            developerNode.put("closedTickets", dev.getClosedTicketsLastMonth(command.getTimestamp().minusMonths(1)).size());
-            developerNode.put("averageResolutionTime", Math.round(dev.getAverageResolutionTime(command.getTimestamp().minusMonths(1)) * 100.0) / 100.0);
-            developerNode.put("performanceScore", Math.round(dev.getPerformanceScore(command.getTimestamp()) * 100.0) / 100.0);
+            developerNode.put("closedTickets",
+                    dev.getClosedTicketsLastMonth(
+                            command.getTimestamp().minusMonths(1)).size());
+            developerNode.put("averageResolutionTime",
+                    Math.round(dev.getAverageResolutionTime(
+                            command.getTimestamp().minusMonths(1)) * PERCENT) / PERCENT);
+            developerNode.put("performanceScore",
+                    Math.round(dev.getPerformanceScore(
+                            command.getTimestamp()) * PERCENT) / PERCENT);
             developerNode.put("seniority", dev.getSeniority());
             reportNode.add(developerNode);
         }

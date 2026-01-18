@@ -17,6 +17,7 @@ public class FeatureRequest extends Ticket {
     private static final double MAX_VALUE_RISK = 20.0;
     private static final double MAX_VALUE_EFFICIENCY = 20.0;
     private static final double PERCENTAGE = 100.0;
+
     public FeatureRequest() {
         super();
         type = TicketType.FEATURE_REQUEST;
@@ -24,17 +25,26 @@ public class FeatureRequest extends Ticket {
     }
 
     @Override
-    public Double calculateImpactFinal() {
-        return Math.round(Math.min(PERCENTAGE, (businessValue.getValue() * customerDemand.getValue() * PERCENTAGE) / MAX_VALUE_IMPACT) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateImpactFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                (businessValue.getValue() * customerDemand.getValue()
+                        * PERCENTAGE) / MAX_VALUE_IMPACT)
+                * PERCENTAGE) / PERCENTAGE;
     }
 
     @Override
-    public Double calculateRiskFinal() {
-        return Math.round(Math.min(PERCENTAGE, ((businessValue.getValue() + customerDemand.getValue()) * PERCENTAGE) / MAX_VALUE_RISK) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateRiskFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                ((businessValue.getValue() + customerDemand.getValue())
+                        * PERCENTAGE) / MAX_VALUE_RISK)
+                * PERCENTAGE) / PERCENTAGE;
     }
 
     @Override
-    public Double calculateEfficiencyFinal() {
-        return Math.round(Math.min(PERCENTAGE, ((businessValue.getValue() + customerDemand.getValue()) / daysToResolve * PERCENTAGE) / MAX_VALUE_EFFICIENCY) * PERCENTAGE) / PERCENTAGE;
+    public final Double calculateEfficiencyFinal() {
+        return Math.round(Math.min(PERCENTAGE,
+                ((businessValue.getValue() + customerDemand.getValue())
+                        / daysToResolve * PERCENTAGE)
+                / MAX_VALUE_EFFICIENCY) * PERCENTAGE) / PERCENTAGE;
     }
 }

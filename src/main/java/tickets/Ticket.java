@@ -60,8 +60,9 @@ public abstract class Ticket {
 
     /**
      * Changes the ticket status to the next status in the workflow
+     * @param timestamp the current date for status change
      */
-    public final void changeStatus(LocalDate timestamp) {
+    public final void changeStatus(final LocalDate timestamp) {
         if (status == TicketStatus.OPEN) {
             status = TicketStatus.IN_PROGRESS;
         } else if (status == TicketStatus.IN_PROGRESS) {
@@ -85,16 +86,23 @@ public abstract class Ticket {
                     blockedMilestone.setStatus("ACTIVE");
                     blockedMilestone.setLastDayUpdated(timestamp);
                     for (String dev : blockedMilestone.getAssignedDevs()) {
-                        Developer developer = (Developer) appCenter.getUserByUsername(dev);
+                        Developer developer =
+                                (Developer) appCenter.getUserByUsername(dev);
                         if (blockedMilestone.getDueDate().isBefore(timestamp)) {
-                            developer.addNotification("Milestone " + blockedMilestone.getName() + " was unblocked after due date. All active tickets are now CRITICAL.");
+                            developer.addNotification("Milestone "
+                                    + blockedMilestone.getName()
+                                    + " was unblocked after due date. "
+                                    + "All active tickets are now CRITICAL.");
                             for (Ticket t : blockedMilestone.getTickets()) {
                                 if (t.getStatus() != TicketStatus.CLOSED) {
                                     t.setBusinessPriority(BusinessPriority.CRITICAL);
                                 }
                             }
                         } else {
-                            developer.addNotification("Milestone " + blockedMilestone.getName() + " is now unblocked as ticket " + id + " has been CLOSED.");
+                            developer.addNotification("Milestone "
+                                    + blockedMilestone.getName()
+                                    + " is now unblocked as ticket " + id
+                                    + " has been CLOSED.");
                         }
                     }
                 }
@@ -127,9 +135,21 @@ public abstract class Ticket {
         return false;
     }
 
+    /**
+     * Calculates the final impact score for this ticket
+     * @return the calculated impact score
+     */
     public abstract Double calculateImpactFinal();
 
+    /**
+     * Calculates the final risk score for this ticket
+     * @return the calculated risk score
+     */
     public abstract Double calculateRiskFinal();
 
+    /**
+     * Calculates the final efficiency score for this ticket
+     * @return the calculated efficiency score
+     */
     public abstract Double calculateEfficiencyFinal();
 }

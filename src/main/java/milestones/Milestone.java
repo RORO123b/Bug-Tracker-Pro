@@ -56,7 +56,8 @@ public final class Milestone {
         AppCenter appCenter = AppCenter.getInstance();
         for (String dev : assignedDevs) {
             Developer developer = (Developer) appCenter.getUserByUsername(dev);
-            developer.addNotification("New milestone " + name + " has been created with due date " + dueDate + ".");
+            developer.addNotification("New milestone " + name
+                    + " has been created with due date " + dueDate + ".");
         }
 
         this.createdAt = createdAt;

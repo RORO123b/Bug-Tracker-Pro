@@ -22,6 +22,10 @@ public final class Developer extends User {
     private static final int JUNIOR_BONUS = 5;
     private static final int MID_BONUS = 15;
     private static final int SENIOR_BONUS = 30;
+    private static final double NUMBER_OF_TICKET_TYPES = 3.0;
+    private static final double HALF = 0.5;
+    private static final double HIGH_PRIORITY_MULTIPLIER = 0.7;
+    private static final double RESOLUTION_TIME_MULTIPLIER = 0.3;
     private String hireDate;
     private ExpertiseArea expertiseArea;
     private String seniority;
@@ -120,34 +124,55 @@ public final class Developer extends User {
         return false;
     }
 
-    public void addNotification(String notification) {
+    /**
+     * Adds a notification to the developer's notification list
+     * @param notification the notification message to add
+     */
+    public void addNotification(final String notification) {
         notifications.add(notification);
     }
 
-    public List<Ticket> getClosedTicketsLastMonth(LocalDate lastMonth) {
+    /**
+     * Gets the list of closed tickets in the specified month
+     * @param lastMonth the month to check for closed tickets
+     * @return list of closed tickets in that month
+     */
+    public List<Ticket> getClosedTicketsLastMonth(final LocalDate lastMonth) {
         List<Ticket> closedTickets = new ArrayList<>();
         for (Ticket ticket : assignedTickets) {
-            if (ticket.getStatus() == TicketStatus.CLOSED && lastMonth.getMonth().equals(ticket.getSolvedAt().getMonth())) {
+            if (ticket.getStatus() == TicketStatus.CLOSED
+                    && lastMonth.getMonth().equals(ticket.getSolvedAt().getMonth())) {
                 closedTickets.add(ticket);
             }
         }
         return closedTickets;
     }
 
-    public double getAverageResolutionTime(LocalDate lastMonth) {
+    /**
+     * Calculates the average resolution time for tickets closed in the specified month
+     * @param lastMonth the month to calculate average resolution time for
+     * @return the average resolution time in days
+     */
+    public double getAverageResolutionTime(final LocalDate lastMonth) {
         List<Ticket> closedTickets = getClosedTicketsLastMonth(lastMonth);
         if (closedTickets.isEmpty()) {
             return 0.0;
         }
         double averageResolutionTime = 0.0;
         for (Ticket ticket : closedTickets) {
-            averageResolutionTime += (int) ChronoUnit.DAYS.between(ticket.getAssignedAt(), ticket.getSolvedAt()) + 1;
+            averageResolutionTime += (int) ChronoUnit.DAYS.between(
+                    ticket.getAssignedAt(), ticket.getSolvedAt()) + 1;
         }
         averageResolutionTime /= closedTickets.size();
         return averageResolutionTime;
     }
 
-    public double getPerformanceScore(LocalDate timestamp) {
+    /**
+     * Calculates the performance score based on ticket resolution and type
+     * @param timestamp the timestamp to calculate performance score for
+     * @return the calculated performance score
+     */
+    public double getPerformanceScore(final LocalDate timestamp) {
         List<Ticket> closedTickets = getClosedTicketsLastMonth(timestamp.minusMonths(1));
         if (closedTickets.isEmpty()) {
             return 0.0;
@@ -165,28 +190,43 @@ public final class Developer extends User {
            }
         }
         if (seniority.equals("JUNIOR")) {
-            double averageResolvedTicketType = (bugTickets + featureTickets + uiTickets) / 3.0;
-            double standardDeviation = sqrt((Math.pow((bugTickets - averageResolvedTicketType), 2) + Math.pow((featureTickets - averageResolvedTicketType), 2) + Math.pow((uiTickets - averageResolvedTicketType), 2)) / 3);
-            double ticketDiversityFactor = standardDeviation / averageResolvedTicketType;
-            performanceScore = Math.max(0, 0.5 * closedTickets.size() - ticketDiversityFactor) + JUNIOR_BONUS;
+            double averageResolvedTicketType =
+                    (bugTickets + featureTickets + uiTickets) / NUMBER_OF_TICKET_TYPES;
+            double standardDeviation = sqrt((Math.pow((bugTickets
+                    - averageResolvedTicketType), 2)
+                    + Math.pow((featureTickets - averageResolvedTicketType), 2)
+                    + Math.pow((uiTickets - averageResolvedTicketType), 2))
+                    / NUMBER_OF_TICKET_TYPES);
+            double ticketDiversityFactor =
+                    standardDeviation / averageResolvedTicketType;
+            performanceScore = Math.max(0, HALF * closedTickets.size()
+                    - ticketDiversityFactor) + JUNIOR_BONUS;
         } else if (seniority.equals("MID")) {
             int highPriorityTickets = 0;
-            double averageResolutionTime = getAverageResolutionTime(timestamp.minusMonths(1));
+            double averageResolutionTime =
+                    getAverageResolutionTime(timestamp.minusMonths(1));
             for (Ticket ticket : closedTickets) {
-                if (ticket.getBusinessPriority() == BusinessPriority.HIGH || ticket.getBusinessPriority() == BusinessPriority.CRITICAL) {
+                if (ticket.getBusinessPriority() == BusinessPriority.HIGH
+                        || ticket.getBusinessPriority() == BusinessPriority.CRITICAL) {
                     highPriorityTickets++;
                 }
             }
-            performanceScore = Math.max(0, 0.5 * closedTickets.size() + 0.7 * highPriorityTickets - 0.3 * averageResolutionTime) + MID_BONUS;
+            performanceScore = Math.max(0, HALF * closedTickets.size()
+                    + HIGH_PRIORITY_MULTIPLIER * highPriorityTickets
+                    - RESOLUTION_TIME_MULTIPLIER * averageResolutionTime) + MID_BONUS;
         } else if (seniority.equals("SENIOR")) {
             int highPriorityTickets = 0;
-            double averageResolutionTime = getAverageResolutionTime(timestamp.minusMonths(1));
+            double averageResolutionTime =
+                    getAverageResolutionTime(timestamp.minusMonths(1));
             for (Ticket ticket : closedTickets) {
-                if (ticket.getBusinessPriority() == BusinessPriority.HIGH || ticket.getBusinessPriority() == BusinessPriority.CRITICAL) {
+                if (ticket.getBusinessPriority() == BusinessPriority.HIGH
+                        || ticket.getBusinessPriority() == BusinessPriority.CRITICAL) {
                     highPriorityTickets++;
                 }
             }
-            performanceScore = Math.max(0, 0.5 * closedTickets.size() + 1.0 * highPriorityTickets - 0.5 * averageResolutionTime) + SENIOR_BONUS;
+            performanceScore = Math.max(0, HALF * closedTickets.size()
+                    + 1.0 * highPriorityTickets
+                    - HALF * averageResolutionTime) + SENIOR_BONUS;
         }
         return performanceScore;
     }

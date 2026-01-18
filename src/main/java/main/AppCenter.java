@@ -1,6 +1,10 @@
 package main;
 
-import enums.*;
+import enums.BusinessPriority;
+import enums.ExpertiseArea;
+import enums.Phases;
+import enums.TicketStatus;
+import enums.TicketType;
 import milestones.Milestone;
 import tickets.Ticket;
 import users.User;
@@ -18,6 +22,11 @@ import java.util.List;
 @Setter
 public final class AppCenter {
     private static final int TESTING_PHASE_DURATION = 12;
+    private static final double PERCENT = 100.0;
+    private static final int RISK_NEGLIGIBLE = 24;
+    private static final int RISK_MODERATE = 49;
+    private static final int RISK_SIGNIFICANT = 74;
+    private static final int AVERAGE_IMPACT = 50;
     private static AppCenter instance;
 
     private Phases currentPeriod;
@@ -174,10 +183,15 @@ public final class AppCenter {
         return null;
     }
 
+    /**
+     * Gets all tickets that are either OPEN or IN_PROGRESS
+     * @return list of open or in-progress tickets
+     */
     public List<Ticket> getOpenInProgressTickets() {
         List<Ticket> openInProgressTickets = new ArrayList<>();
         for (Ticket ticket : tickets) {
-            if (ticket.getStatus() == TicketStatus.OPEN ||  ticket.getStatus() == TicketStatus.IN_PROGRESS) {
+            if (ticket.getStatus() == TicketStatus.OPEN
+                    ||  ticket.getStatus() == TicketStatus.IN_PROGRESS) {
                 openInProgressTickets.add(ticket);
             }
         }
@@ -185,6 +199,10 @@ public final class AppCenter {
         return openInProgressTickets;
     }
 
+    /**
+     * Gets all tickets that are either RESOLVED or CLOSED
+     * @return list of resolved or closed tickets
+     */
     public List<Ticket> getResolvedClosedTickets() {
         List<Ticket> resolvedClosedTickets = new ArrayList<>();
         for (Ticket ticket : tickets) {
@@ -196,9 +214,16 @@ public final class AppCenter {
         return resolvedClosedTickets;
     }
 
-    public List<Ticket> getTicketsByType(final TicketType type, final List<Ticket> tickets) {
+    /**
+     * Filters tickets by type
+     * @param type the ticket type to filter by
+     * @param ticketList the list of tickets to filter
+     * @return filtered list of tickets matching the type
+     */
+    public List<Ticket> getTicketsByType(final TicketType type,
+                                          final List<Ticket> ticketList) {
         List<Ticket> result = new ArrayList<>();
-        for (Ticket ticket : tickets) {
+        for (Ticket ticket : ticketList) {
             if (ticket.getType().equals(type)) {
                 result.add(ticket);
             }
@@ -206,9 +231,16 @@ public final class AppCenter {
         return result;
     }
 
-    public List<Ticket> getTicketsByPriority(final BusinessPriority priority, final List<Ticket> tickets) {
+    /**
+     * Filters tickets by priority
+     * @param priority the business priority to filter by
+     * @param ticketList the list of tickets to filter
+     * @return filtered list of tickets matching the priority
+     */
+    public List<Ticket> getTicketsByPriority(final BusinessPriority priority,
+                                              final List<Ticket> ticketList) {
         List<Ticket> result = new ArrayList<>();
-        for (Ticket ticket : tickets) {
+        for (Ticket ticket : ticketList) {
             if (ticket.getBusinessPriority() == priority) {
                 result.add(ticket);
             }
@@ -216,55 +248,84 @@ public final class AppCenter {
         return result;
     }
 
-    public double calculateAverageImpact(List<Ticket> tickets) {
+    /**
+     * Calculates average impact score for a list of tickets
+     * @param ticketList the list of tickets to calculate average for
+     * @return the average impact score
+     */
+    public double calculateAverageImpact(final List<Ticket> ticketList) {
         List<Double> scores = new ArrayList<>();
-        for (Ticket ticket : tickets) {
+        for (Ticket ticket : ticketList) {
             scores.add(ticket.calculateImpactFinal());
         }
-        return Math.round(scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0) * 100.0) / 100.0;
+        return Math.round(scores.stream().mapToDouble(Double::doubleValue)
+                .average().orElse(0.0) * PERCENT) / PERCENT;
     }
 
-    public String calculateAverageRisk(List<Ticket> tickets) {
+    /**
+     * Calculates average risk category for a list of tickets
+     * @param ticketList the list of tickets to calculate average risk for
+     * @return the risk category as a string
+     */
+    public String calculateAverageRisk(final List<Ticket> ticketList) {
         List<Double> scores = new ArrayList<>();
-        for (Ticket ticket : tickets) {
+        for (Ticket ticket : ticketList) {
             scores.add(ticket.calculateRiskFinal());
         }
         double res = scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-        if (res < 24) {
+        if (res < RISK_NEGLIGIBLE) {
             return "NEGLIGIBLE";
-        } else if (res < 49) {
+        } else if (res < RISK_MODERATE) {
             return "MODERATE";
-        } else if (res < 74) {
+        } else if (res < RISK_SIGNIFICANT) {
             return "SIGNIFICANT";
         }
         return "MAJOR";
     }
 
-    public Double calculateEfficiency(List<Ticket> tickets) {
+    public Double calculateEfficiency(final List<Ticket> ticketList) {
         List<Double> scores = new ArrayList<>();
-        for (Ticket ticket : tickets) {
+        for (Ticket ticket : ticketList) {
             scores.add(ticket.calculateEfficiencyFinal());
         }
-        return Math.round(scores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0) * 100.0) / 100.0;
+        return Math.round(scores.stream().mapToDouble(Double::doubleValue)
+                .average().orElse(0.0) * PERCENT) / PERCENT;
     }
 
+    /**
+     * Determines the overall application stability based on ticket metrics
+     * @return the stability status as a string
+     */
     public String getAppStability() {
         if (getOpenInProgressTickets().isEmpty()) {
             return "STABLE";
         }
 
-        if (calculateAverageRisk(getTicketsByType(TicketType.BUG, getOpenInProgressTickets())).equals("NEGLIGIBLE")
-        && calculateAverageRisk(getTicketsByType(TicketType.FEATURE_REQUEST, getOpenInProgressTickets())).equals("NEGLIGIBLE")
-        && calculateAverageRisk(getTicketsByType(TicketType.UI_FEEDBACK, getOpenInProgressTickets())).equals("NEGLIGIBLE")
-        && calculateAverageImpact(getTicketsByType(TicketType.BUG, getOpenInProgressTickets())) < 50
-        && calculateAverageImpact(getTicketsByType(TicketType.FEATURE_REQUEST, getOpenInProgressTickets())) < 50
-        && calculateAverageImpact(getTicketsByType(TicketType.UI_FEEDBACK, getOpenInProgressTickets())) < 50) {
+        if (calculateAverageRisk(getTicketsByType(
+                TicketType.BUG, getOpenInProgressTickets())).equals("NEGLIGIBLE")
+        && calculateAverageRisk(getTicketsByType(
+                TicketType.FEATURE_REQUEST,
+                getOpenInProgressTickets())).equals("NEGLIGIBLE")
+        && calculateAverageRisk(getTicketsByType(
+                TicketType.UI_FEEDBACK,
+                getOpenInProgressTickets())).equals("NEGLIGIBLE")
+        && calculateAverageImpact(getTicketsByType(
+                TicketType.BUG, getOpenInProgressTickets())) < AVERAGE_IMPACT
+        && calculateAverageImpact(getTicketsByType(
+                TicketType.FEATURE_REQUEST, getOpenInProgressTickets())) < AVERAGE_IMPACT
+        && calculateAverageImpact(getTicketsByType(
+                TicketType.UI_FEEDBACK, getOpenInProgressTickets())) < AVERAGE_IMPACT) {
             return "STABLE";
         }
 
-        if (calculateAverageRisk(getTicketsByType(TicketType.BUG, getOpenInProgressTickets())).equals("SIGNIFICANT")
-            || calculateAverageRisk(getTicketsByType(TicketType.FEATURE_REQUEST, getOpenInProgressTickets())).equals("SIGNIFICANT")
-            || calculateAverageRisk(getTicketsByType(TicketType.UI_FEEDBACK, getOpenInProgressTickets())).equals("SIGNIFICANT")) {
+        if (calculateAverageRisk(getTicketsByType(
+                TicketType.BUG, getOpenInProgressTickets())).equals("SIGNIFICANT")
+            || calculateAverageRisk(getTicketsByType(
+                    TicketType.FEATURE_REQUEST,
+                    getOpenInProgressTickets())).equals("SIGNIFICANT")
+            || calculateAverageRisk(getTicketsByType(
+                    TicketType.UI_FEEDBACK,
+                    getOpenInProgressTickets())).equals("SIGNIFICANT")) {
             return "UNSTABLE";
         }
 

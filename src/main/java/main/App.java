@@ -1,6 +1,26 @@
 package main;
 
-import commands.*;
+import commands.AddCommentCommand;
+import commands.AppStabilityReportCommand;
+import commands.AssignTicketCommand;
+import commands.ChangeStatusCommand;
+import commands.CreateMilestoneCommand;
+import commands.GenerateCustomerImpactReportCommand;
+import commands.GeneratePerformanceReportCommand;
+import commands.GenerateResolutionEfficiencyReportCommand;
+import commands.GenerateTicketRiskReportCommand;
+import commands.Invoker;
+import commands.LostInvestorsCommand;
+import commands.ReportTicketCommand;
+import commands.StartTestingPhaseCommand;
+import commands.UndoAddCommentCommand;
+import commands.UndoAssignTicketCommand;
+import commands.UndoChangeStatusCommand;
+import commands.ViewAssignedTicketsCommand;
+import commands.ViewMilestonesCommand;
+import commands.ViewNotificationsCommand;
+import commands.ViewTicketHistoryCommand;
+import commands.ViewTicketsCommand;
 import users.UsersFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -45,18 +65,6 @@ public final class App {
         InputLoader inputLoader = new InputLoader(inputPath);
         InputLoader usersLoader = new InputLoader(INPUT_USERS_FIELD);
         ArrayNode outputs = MAPPER.createArrayNode();
-
-        /*
-            TODO 1 :
-            Load initial user data and commands. we strongly recommend using jackson library.
-            you can use the reading from hw1 as a reference.
-            however you can use some of the more advanced features of
-            jackson library, available here: https://www.baeldung.com/jackson-annotations
-        */
-
-        // TODO 2: process commands.
-
-        // TODO 3: create objectnodes for output, add them to outputs list.\
 
         Invoker invoker = new Invoker();
         AppCenter appCenter = AppCenter.getInstance();
