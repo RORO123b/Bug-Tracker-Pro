@@ -7,6 +7,7 @@ import enums.TicketStatus;
 import enums.TicketType;
 import milestones.Milestone;
 import tickets.Ticket;
+import users.Developer;
 import users.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,13 +43,30 @@ public final class AppCenter {
         milestones = new ArrayList<>();
     }
 
+    /**
+     * Resets the singleton instance.
+     */
+    public static void resetInstance() {
+        instance = null;
+    }
+
+    /**
+     * @return the singleton instance of AppCenter
+     */
+    public static AppCenter getInstance() {
+        if (instance == null) {
+            instance = new AppCenter();
+        }
+
+        return instance;
+    }
+
     private void checkTransition(final LocalDate currentDate) {
-        if (currentPeriod == Phases.TESTING) {
-            if ((int) ChronoUnit.DAYS.between(datePeriodStart, currentDate)
-                    + 1 > TESTING_PHASE_DURATION) {
-                currentPeriod = Phases.DEVELOPMENT;
-                datePeriodStart = currentDate;
-            }
+        if (currentPeriod == Phases.TESTING
+            && (int) ChronoUnit.DAYS.between(datePeriodStart, currentDate)
+                + 1 > TESTING_PHASE_DURATION) {
+            currentPeriod = Phases.DEVELOPMENT;
+            datePeriodStart = currentDate;
         }
     }
 
@@ -66,24 +84,6 @@ public final class AppCenter {
     public void updates(final LocalDate currentDate) {
         checkTransition(currentDate);
         updateMilestones(currentDate);
-    }
-
-    /**
-     * Resets the singleton instance.
-     */
-    public static void resetInstance() {
-        instance = null;
-    }
-
-    /**
-     * @return the singleton instance of AppCenter
-     */
-    public static AppCenter getInstance() {
-        if (instance == null) {
-            instance = new AppCenter();
-        }
-
-        return instance;
     }
 
     /**
@@ -206,7 +206,7 @@ public final class AppCenter {
     public List<Ticket> getResolvedClosedTickets() {
         List<Ticket> resolvedClosedTickets = new ArrayList<>();
         for (Ticket ticket : tickets) {
-            if (ticket.getStatus() == TicketStatus.RESOLVED ||  ticket.getStatus() == TicketStatus.CLOSED) {
+            if (ticket.getStatus() == TicketStatus.RESOLVED || ticket.getStatus() == TicketStatus.CLOSED) {
                 resolvedClosedTickets.add(ticket);
             }
         }
@@ -297,38 +297,77 @@ public final class AppCenter {
      * @return the stability status as a string
      */
     public String getAppStability() {
-        if (getOpenInProgressTickets().isEmpty()) {
+        List<Ticket> openInProgress = getOpenInProgressTickets();
+
+        if (openInProgress.isEmpty()) {
             return "STABLE";
         }
 
-        if (calculateAverageRisk(getTicketsByType(
-                TicketType.BUG, getOpenInProgressTickets())).equals("NEGLIGIBLE")
-        && calculateAverageRisk(getTicketsByType(
-                TicketType.FEATURE_REQUEST,
-                getOpenInProgressTickets())).equals("NEGLIGIBLE")
-        && calculateAverageRisk(getTicketsByType(
-                TicketType.UI_FEEDBACK,
-                getOpenInProgressTickets())).equals("NEGLIGIBLE")
-        && calculateAverageImpact(getTicketsByType(
-                TicketType.BUG, getOpenInProgressTickets())) < AVERAGE_IMPACT
-        && calculateAverageImpact(getTicketsByType(
-                TicketType.FEATURE_REQUEST, getOpenInProgressTickets())) < AVERAGE_IMPACT
-        && calculateAverageImpact(getTicketsByType(
-                TicketType.UI_FEEDBACK, getOpenInProgressTickets())) < AVERAGE_IMPACT) {
+        if (allTypesHaveNegligibleRisk(openInProgress) 
+                && allTypesHaveLowImpact(openInProgress)) {
             return "STABLE";
         }
 
-        if (calculateAverageRisk(getTicketsByType(
-                TicketType.BUG, getOpenInProgressTickets())).equals("SIGNIFICANT")
-            || calculateAverageRisk(getTicketsByType(
-                    TicketType.FEATURE_REQUEST,
-                    getOpenInProgressTickets())).equals("SIGNIFICANT")
-            || calculateAverageRisk(getTicketsByType(
-                    TicketType.UI_FEEDBACK,
-                    getOpenInProgressTickets())).equals("SIGNIFICANT")) {
+        if (anyTypeHasSignificantRisk(openInProgress)) {
             return "UNSTABLE";
         }
 
         return "PARTIALLY STABLE";
+    }
+
+    private boolean allTypesHaveNegligibleRisk(final List<Ticket> tickets) {
+        TicketType[] types = {TicketType.BUG, TicketType.FEATURE_REQUEST, TicketType.UI_FEEDBACK};
+
+        for (TicketType type : types) {
+            String risk = calculateAverageRisk(getTicketsByType(type, tickets));
+            if (!risk.equals("NEGLIGIBLE")) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean allTypesHaveLowImpact(final List<Ticket> tickets) {
+        TicketType[] types = {TicketType.BUG, TicketType.FEATURE_REQUEST, TicketType.UI_FEEDBACK};
+
+        for (TicketType type : types) {
+            double impact = calculateAverageImpact(getTicketsByType(type, tickets));
+            if (impact >= AVERAGE_IMPACT) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean anyTypeHasSignificantRisk(final List<Ticket> tickets) {
+        TicketType[] types = {TicketType.BUG, TicketType.FEATURE_REQUEST, TicketType.UI_FEEDBACK};
+
+        for (TicketType type : types) {
+            String risk = calculateAverageRisk(getTicketsByType(type, tickets));
+            if (risk.equals("SIGNIFICANT")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<Ticket> getOpenTicketsForDeveloper(final Developer dev) {
+        List<Ticket> openTickets = new ArrayList<>();
+
+        for (Milestone milestone : milestones) {
+            if (!milestone.getAssignedDevs().contains(dev.getUsername())) {
+                continue;
+            }
+
+            for (Ticket ticket : milestone.getTickets()) {
+                if (ticket.getStatus() == TicketStatus.OPEN) {
+                    openTickets.add(ticket);
+                }
+            }
+        }
+        return openTickets;
     }
 }

@@ -11,11 +11,12 @@ import users.Developer;
 import users.User;
 
 public final class AddCommentCommand implements Command {
+    private static final int MIN_COMMENT_LENGTH = 10;
+
     public AddCommentCommand() { }
 
     @Override
     public ObjectNode execute(final ObjectMapper mapper, final CommandInput command) {
-        final int minCommentLength = 10;
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Ticket ticket = appCenter.getTicketById(command.getTicketID());
@@ -31,7 +32,7 @@ public final class AddCommentCommand implements Command {
                 throw new IllegalArgumentException(
                         "Reporters cannot comment on CLOSED tickets.");
             }
-            if (command.getComment().length() < minCommentLength) {
+            if (command.getComment().length() < MIN_COMMENT_LENGTH) {
                 throw new IllegalArgumentException(
                         "Comment must be at least 10 characters long.");
             }

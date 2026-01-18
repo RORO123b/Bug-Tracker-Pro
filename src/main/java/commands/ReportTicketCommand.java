@@ -37,7 +37,7 @@ public final class ReportTicketCommand implements Command {
                 throw new IllegalArgumentException("Anonymous reports are only "
                         + "allowed for tickets of type BUG.");
             }
-            Ticket ticket;
+            Ticket ticket = null;
             if (command.getParams().getType().equals(TicketType.BUG)) {
                 ticket = new BugBuilder()
                         .id(appCenter.getTickets().size())

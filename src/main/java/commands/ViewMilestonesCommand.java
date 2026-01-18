@@ -25,21 +25,11 @@ public final class ViewMilestonesCommand implements Command {
         ArrayNode milestonesArray = mapper.createArrayNode();
         User user = appCenter.getUserByUsername(command.getUsername());
 
-        if (user.getRole().equals("MANAGER")) {
-            for (Milestone milestone : appCenter.getMilestones()) {
-                if (milestone.getCreatedBy().equals(command.getUsername())) {
-                    ObjectNode milestoneNode = CommandHelper.createMilestoneNode(milestone,
-                            command);
-                    milestonesArray.add(milestoneNode);
-                }
-            }
-        } else if (user.getRole().equals("DEVELOPER")) {
-            for (Milestone milestone : appCenter.getMilestones()) {
-                if (milestone.getAssignedDevs().contains(command.getUsername())) {
-                    ObjectNode milestoneNode = CommandHelper.createMilestoneNode(milestone,
-                            command);
-                    milestonesArray.add(milestoneNode);
-                }
+        for (Milestone milestone : appCenter.getMilestones()) {
+            if (user.getRole().equals("MANAGER") && milestone.getCreatedBy().equals(command.getUsername())
+            || user.getRole().equals("DEVELOPER") && milestone.getAssignedDevs().contains(command.getUsername())) {
+                ObjectNode milestoneNode = CommandHelper.createMilestoneNode(milestone, command);
+                milestonesArray.add(milestoneNode);
             }
         }
         commandNode.set("milestones", milestonesArray);

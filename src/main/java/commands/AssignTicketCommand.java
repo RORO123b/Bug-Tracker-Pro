@@ -72,14 +72,17 @@ public final class AssignTicketCommand implements Command {
                         + " from blocked milestone " + milestone.getName() + ".");
             }
             dev.addTicket(ticket);
+
             ticket.setAssignedAt(command.getTimestamp());
             ticket.setAssignedTo(dev.getUsername());
             ticket.setStatus(TicketStatus.IN_PROGRESS);
+
             ticket.getHistory().add(new ActionBuilder()
                     .action("ASSIGNED")
                     .by(command.getUsername())
                     .timestamp(command.getTimestamp())
                     .build());
+
             ticket.getHistory().add(new ActionBuilder()
                     .action("STATUS_CHANGED")
                     .oldStatus(TicketStatus.OPEN.toString())
@@ -87,6 +90,7 @@ public final class AssignTicketCommand implements Command {
                     .by(command.getUsername())
                     .timestamp(command.getTimestamp())
                     .build());
+
         } catch (IllegalStateException | IllegalArgumentException e) {
             ObjectNode error = CommandHelper.createErrorNode(mapper, command,
                     e.getMessage());

@@ -33,7 +33,6 @@ public final class SearchCommand implements Command {
         User requester = appCenter.getUserByUsername(command.getUsername());
         FilterInput filters = command.getFilters();
 
-
         commandNode.put("searchType", filters.getSearchType());
 
         SearchTypeStrategy strategy;
@@ -51,13 +50,10 @@ public final class SearchCommand implements Command {
                 Developer dev = (Developer) obj;
                 ObjectNode devNode = mapper.createObjectNode();
                 devNode.put("username", dev.getUsername());
-                devNode.put("expertiseArea", dev.getExpertiseArea() != null
-                        ? dev.getExpertiseArea().toString() : "");
-                devNode.put("seniority", dev.getSeniority() != null
-                        ? dev.getSeniority() : "");
+                devNode.put("expertiseArea", dev.getExpertiseArea().toString());
+                devNode.put("seniority", dev.getSeniority());
                 devNode.put("performanceScore", dev.getPerformanceScore());
-                devNode.put("hireDate", dev.getHireDate() != null
-                        ? dev.getHireDate() : "");
+                devNode.put("hireDate", dev.getHireDate());
                 resultsArray.add(devNode);
             }
         } else {
@@ -65,20 +61,14 @@ public final class SearchCommand implements Command {
                 Ticket ticket = (Ticket) obj;
                 ObjectNode ticketNode = mapper.createObjectNode();
                 ticketNode.put("id", ticket.getId());
-                ticketNode.put("type", ticket.getType() != null
-                        ? ticket.getType().toString() : "");
-                ticketNode.put("title", ticket.getTitle() != null
-                        ? ticket.getTitle() : "");
-                ticketNode.put("businessPriority", ticket.getBusinessPriority() != null
-                        ? ticket.getBusinessPriority().toString() : "");
-                ticketNode.put("status", ticket.getStatus() != null
-                        ? ticket.getStatus().toString() : "");
-                ticketNode.put("createdAt", ticket.getCreatedAt() != null
-                        ? ticket.getCreatedAt() : "");
+                ticketNode.put("type", ticket.getType().toString());
+                ticketNode.put("title", ticket.getTitle());
+                ticketNode.put("businessPriority", ticket.getBusinessPriority().toString());
+                ticketNode.put("status", ticket.getStatus().toString());
+                ticketNode.put("createdAt", ticket.getCreatedAt());
                 ticketNode.put("solvedAt", ticket.getSolvedAt() != null
                         ? ticket.getSolvedAt().toString() : "");
-                ticketNode.put("reportedBy", ticket.getReportedBy() != null
-                        ? ticket.getReportedBy() : "");
+                ticketNode.put("reportedBy", ticket.getReportedBy());
 
                 if (requester.getRole().equals("MANAGER")) {
                     ArrayNode matchingWordsArray = mapper.createArrayNode();

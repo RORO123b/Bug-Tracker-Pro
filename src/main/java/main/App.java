@@ -60,8 +60,6 @@ public final class App {
     public static void run(final String inputPath, final String outputPath) throws IOException {
         AppCenter.resetInstance();
 
-        // feel free to change this if needed
-        // however keep 'outputs' variable name to be used for writing
         InputLoader inputLoader = new InputLoader(inputPath);
         InputLoader usersLoader = new InputLoader(INPUT_USERS_FIELD);
         ArrayNode outputs = MAPPER.createArrayNode();
@@ -90,7 +88,6 @@ public final class App {
                 appCenter.setDatePeriodStart(command.getTimestamp());
             }
 
-            ObjectNode commandNode;
             switch (command.getCommand()) {
                 case "reportTicket":
                     invoker.setCommand(new ReportTicketCommand());
@@ -159,7 +156,7 @@ public final class App {
                     invoker.setCommand(new LostInvestorsCommand());
                     break;
             }
-            commandNode = invoker.pressButton(MAPPER, command);
+            ObjectNode commandNode = invoker.pressButton(MAPPER, command);
             if (commandNode != null) {
                 outputs.add(commandNode);
             }

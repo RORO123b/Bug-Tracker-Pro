@@ -17,21 +17,14 @@ public final class CreateMilestoneCommand implements Command {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             for (Milestone existingMilestone : appCenter.getMilestones()) {
-                if (existingMilestone.getTickets() != null) {
-                    for (Ticket ticket : existingMilestone.getTickets()) {
-                        if (command.getTickets().contains(ticket.getId())) {
-                            throw new IllegalArgumentException("Tickets "
-                                    + ticket.getId()
-                                    + " already assigned to milestone "
-                                    + existingMilestone.getName() + ".");
-                        }
-                    }
+                for (Ticket ticket : existingMilestone.getTickets()) {
+                    check(command, ticket, existingMilestone);
                 }
             }
 
             User user = appCenter.getUserByUsername(command.getUsername());
 
-            if (!"MANAGER".equals(user.getRole())) {
+            if (!user.getRole().equals("MANAGER")) {
                 throw new IllegalArgumentException("The user does not have permission"
                         + " to execute this command: required role MANAGER; user role "
                         + user.getRole() + ".");
@@ -59,6 +52,14 @@ public final class CreateMilestoneCommand implements Command {
             ObjectNode error = CommandHelper.createErrorNode(mapper, command,
                     e.getMessage());
             return error;
+        }
+    }
+    private void check(CommandInput command, Ticket ticket, Milestone existingMilestone) {
+        if (command.getTickets().contains(ticket.getId())) {
+            throw new IllegalArgumentException("Tickets "
+                    + ticket.getId()
+                    + " already assigned to milestone "
+                    + existingMilestone.getName() + ".");
         }
     }
 }

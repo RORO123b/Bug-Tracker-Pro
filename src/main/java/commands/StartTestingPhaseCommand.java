@@ -19,10 +19,7 @@ public final class StartTestingPhaseCommand implements Command {
 
             for (Milestone milestone : appCenter.getMilestones()) {
                 for (Ticket ticket : milestone.getTickets()) {
-                    if (ticket.getStatus() != TicketStatus.CLOSED) {
-                        throw new IllegalStateException(
-                                "Cannot start a new testing phase.");
-                    }
+                    check(ticket);
                 }
             }
 
@@ -34,6 +31,13 @@ public final class StartTestingPhaseCommand implements Command {
             ObjectNode error = CommandHelper.createErrorNode(mapper, command,
                     e.getMessage());
             return error;
+        }
+    }
+
+    private void check(Ticket ticket) {
+        if (ticket.getStatus() != TicketStatus.CLOSED) {
+            throw new IllegalStateException(
+                    "Cannot start a new testing phase.");
         }
     }
 }

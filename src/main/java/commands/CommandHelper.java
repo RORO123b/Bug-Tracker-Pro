@@ -20,9 +20,7 @@ import java.util.List;
 public final class CommandHelper {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private CommandHelper() {
-        throw new UnsupportedOperationException("Utility class");
-    }
+    private CommandHelper() { }
 
     /**
      * Creates an ObjectNode for a Ticket.
@@ -32,34 +30,26 @@ public final class CommandHelper {
     public static ObjectNode createTicketNode(final Ticket ticket) {
         ObjectNode ticketNode = MAPPER.createObjectNode();
         ticketNode.put("id", ticket.getId());
-        ticketNode.put("type", ticket.getType() != null ? ticket.getType().toString() : "");
-        ticketNode.put("title", ticket.getTitle() != null ? ticket.getTitle() : "");
-        ticketNode.put("businessPriority",
-                ticket.getBusinessPriority() != null
-                ? ticket.getBusinessPriority().toString() : "");
-        ticketNode.put("status",
-                ticket.getStatus() != null ? ticket.getStatus().toString() : "");
-        ticketNode.put("createdAt", ticket.getCreatedAt() != null ? ticket.getCreatedAt() : "");
+        ticketNode.put("type", ticket.getType().toString());
+        ticketNode.put("title", ticket.getTitle());
+        ticketNode.put("businessPriority",ticket.getBusinessPriority().toString());
+        ticketNode.put("status", ticket.getStatus().toString());
+        ticketNode.put("createdAt", ticket.getCreatedAt());
         ticketNode.put("assignedAt",
                 ticket.getAssignedAt() != null
                         ? ticket.getAssignedAt().toString() : "");
         ticketNode.put("solvedAt",
                 ticket.getSolvedAt() != null ? ticket.getSolvedAt().toString() : "");
         ticketNode.put("assignedTo", ticket.getAssignedTo() != null ? ticket.getAssignedTo() : "");
-        ticketNode.put("reportedBy", ticket.getReportedBy() != null ? ticket.getReportedBy() : "");
+        ticketNode.put("reportedBy", ticket.getReportedBy());
 
         ArrayNode commentsArray = MAPPER.createArrayNode();
-        if (ticket.getComments() != null) {
-            for (Comment comment : ticket.getComments()) {
-                ObjectNode commentNode = MAPPER.createObjectNode();
-                commentNode.put("author", comment.getAuthor() != null
-                        ? comment.getAuthor() : "");
-                commentNode.put("content", comment.getContent() != null
-                        ? comment.getContent() : "");
-                commentNode.put("createdAt", comment.getCreatedAt() != null
-                        ? comment.getCreatedAt().toString() : "");
-                commentsArray.add(commentNode);
-            }
+        for (Comment comment : ticket.getComments()) {
+            ObjectNode commentNode = MAPPER.createObjectNode();
+            commentNode.put("author", comment.getAuthor());
+            commentNode.put("content", comment.getContent());
+            commentNode.put("createdAt", comment.getCreatedAt().toString());
+            commentsArray.add(commentNode);
         }
         ticketNode.set("comments", commentsArray);
 
@@ -74,33 +64,24 @@ public final class CommandHelper {
     public static ObjectNode createAssignedTicketNode(final Ticket ticket) {
         ObjectNode ticketNode = MAPPER.createObjectNode();
         ticketNode.put("id", ticket.getId());
-        ticketNode.put("type", ticket.getType() != null ? ticket.getType().toString() : "");
-        ticketNode.put("title", ticket.getTitle() != null ? ticket.getTitle() : "");
+        ticketNode.put("type", ticket.getType().toString());
+        ticketNode.put("title", ticket.getTitle());
         ticketNode.put("businessPriority",
-                ticket.getBusinessPriority() != null
-                ? ticket.getBusinessPriority().toString() : "");
-        ticketNode.put("status",
-                ticket.getStatus() != null ? ticket.getStatus().toString() : "");
-        ticketNode.put("createdAt",
-                ticket.getCreatedAt() != null ? ticket.getCreatedAt() : "");
+                ticket.getBusinessPriority().toString());
+        ticketNode.put("status", ticket.getStatus().toString());
+        ticketNode.put("createdAt", ticket.getCreatedAt());
         ticketNode.put("assignedAt",
                 ticket.getAssignedAt() != null
                         ? ticket.getAssignedAt().toString() : "");
-        ticketNode.put("reportedBy",
-                ticket.getReportedBy() != null ? ticket.getReportedBy() : "");
+        ticketNode.put("reportedBy", ticket.getReportedBy());
 
         ArrayNode commentsArray = MAPPER.createArrayNode();
-        if (ticket.getComments() != null) {
-            for (Comment comment : ticket.getComments()) {
-                ObjectNode commentNode = MAPPER.createObjectNode();
-                commentNode.put("author", comment.getAuthor() != null
-                        ? comment.getAuthor() : "");
-                commentNode.put("content", comment.getContent() != null
-                        ? comment.getContent() : "");
-                commentNode.put("createdAt", comment.getCreatedAt() != null
-                        ? comment.getCreatedAt().toString() : "");
-                commentsArray.add(commentNode);
-            }
+        for (Comment comment : ticket.getComments()) {
+            ObjectNode commentNode = MAPPER.createObjectNode();
+            commentNode.put("author", comment.getAuthor());
+            commentNode.put("content", comment.getContent());
+            commentNode.put("createdAt", comment.getCreatedAt().toString());
+            commentsArray.add(commentNode);
         }
         ticketNode.set("comments", commentsArray);
 
@@ -117,61 +98,47 @@ public final class CommandHelper {
                                                  final CommandInput command) {
         ObjectNode milestoneNode = MAPPER.createObjectNode();
 
-        milestoneNode.put("name", milestone.getName() != null ? milestone.getName() : "");
+        milestoneNode.put("name", milestone.getName());
 
         ArrayNode blockingForArray = MAPPER.createArrayNode();
-        if (milestone.getBlockingFor() != null) {
-            for (Milestone block : milestone.getBlockingFor()) {
-                blockingForArray.add(block.getName() != null ? block.getName() : "");
-            }
+        for (Milestone block : milestone.getBlockingFor()) {
+            blockingForArray.add(block.getName());
         }
         milestoneNode.set("blockingFor", blockingForArray);
 
-        milestoneNode.put("dueDate", milestone.getDueDate() != null
-                ? milestone.getDueDate().toString() : "");
-        milestoneNode.put("createdAt", milestone.getCreatedAt() != null
-                ? milestone.getCreatedAt().toString() : "");
+        milestoneNode.put("dueDate", milestone.getDueDate().toString());
+        milestoneNode.put("createdAt", milestone.getCreatedAt().toString());
 
         ArrayNode ticketsArray = MAPPER.createArrayNode();
-        if (milestone.getTickets() != null) {
-            for (Ticket ticket : milestone.getTickets()) {
-                ticketsArray.add(ticket.getId());
-            }
+        for (Ticket ticket : milestone.getTickets()) {
+            ticketsArray.add(ticket.getId());
         }
         milestoneNode.set("tickets", ticketsArray);
 
         ArrayNode assignedDevsArray = MAPPER.createArrayNode();
-        if (milestone.getAssignedDevs() != null) {
-            for (String dev : milestone.getAssignedDevs()) {
-                assignedDevsArray.add(dev != null ? dev : "");
-            }
+        for (String dev : milestone.getAssignedDevs()) {
+            assignedDevsArray.add(dev);
         }
         milestoneNode.set("assignedDevs", assignedDevsArray);
 
-        milestoneNode.put("createdBy", milestone.getCreatedBy() != null
-                ? milestone.getCreatedBy() : "");
-        milestoneNode.put("status", milestone.getStatus() != null
-                ? milestone.getStatus() : "");
+        milestoneNode.put("createdBy",milestone.getCreatedBy());
+        milestoneNode.put("status",milestone.getStatus());
         milestoneNode.put("isBlocked", milestone.getBlocked());
         milestoneNode.put("daysUntilDue", milestone.getDaysUntilDue());
         milestoneNode.put("overdueBy", milestone.getOverdueBy());
 
         ArrayNode openTicketsArray = MAPPER.createArrayNode();
-        if (milestone.getTickets() != null) {
-            for (Ticket ticket : milestone.getTickets()) {
-                if (ticket.getStatus() != TicketStatus.CLOSED) {
-                    openTicketsArray.add(ticket.getId());
-                }
+        for (Ticket ticket : milestone.getTickets()) {
+            if (ticket.getStatus() != TicketStatus.CLOSED) {
+                openTicketsArray.add(ticket.getId());
             }
         }
         milestoneNode.set("openTickets", openTicketsArray);
 
         ArrayNode closedTicketsArray = MAPPER.createArrayNode();
-        if (milestone.getTickets() != null) {
-            for (Ticket ticket : milestone.getTickets()) {
-                if (ticket.getStatus() == TicketStatus.CLOSED) {
-                    closedTicketsArray.add(ticket.getId());
-                }
+        for (Ticket ticket : milestone.getTickets()) {
+            if (ticket.getStatus() == TicketStatus.CLOSED) {
+                closedTicketsArray.add(ticket.getId());
             }
         }
         milestoneNode.set("closedTickets", closedTicketsArray);
@@ -206,8 +173,7 @@ public final class CommandHelper {
         for (String username : sortedDevs) {
             Developer dev = (Developer) appCenter.getUserByUsername(username);
             ObjectNode repartitionNode = MAPPER.createObjectNode();
-            repartitionNode.put("developer", dev != null
-                    ? dev.getUsername() : "");
+            repartitionNode.put("developer", dev.getUsername());
 
             ArrayNode assignedTicketsArray = MAPPER.createArrayNode();
             List<Integer> ticketIds = new ArrayList<>();

@@ -27,28 +27,50 @@ public final class ViewTicketsCommand implements Command {
         ArrayNode ticketsArray = mapper.createArrayNode();
 
         if (user.getRole().equals("MANAGER")) {
-            for (Ticket ticket : appCenter.getTickets()) {
-                ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
-                ticketsArray.add(ticketNode);
-            }
+            addManagerTickets(ticketsArray, appCenter);
         } else if (user.getRole().equals("DEVELOPER")) {
-            for (Ticket ticket : appCenter.getTickets()) {
-                if (ticket.getStatus().equals(TicketStatus.OPEN)
-                        && appCenter.getMilestoneByTicketID(ticket.getId())
-                                    .getAssignedDevs().contains(user.getUsername())) {
-                    ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
-                    ticketsArray.add(ticketNode);
-                }
-            }
+            addDeveloperTickets(ticketsArray, appCenter, user);
         } else if (user.getRole().equals("REPORTER")) {
-            for (Ticket ticket : appCenter.getTickets()) {
-                if (ticket.getReportedBy().equals(command.getUsername())) {
-                    ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
-                    ticketsArray.add(ticketNode);
-                }
-            }
+            addReporterTickets(ticketsArray, appCenter, command.getUsername());
         }
+
         commandNode.set("tickets", ticketsArray);
         return commandNode;
+    }
+
+    private void addManagerTickets(final ArrayNode ticketsArray, final AppCenter appCenter) {
+        for (Ticket ticket : appCenter.getTickets()) {
+            ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
+            ticketsArray.add(ticketNode);
+        }
+    }
+
+    private void addDeveloperTickets(final ArrayNode ticketsArray, final AppCenter appCenter,
+                                     final User user) {
+        for (Ticket ticket : appCenter.getTickets()) {
+            if (!ticket.getStatus().equals(TicketStatus.OPEN)) {
+                continue;
+            }
+
+            if (!appCenter.getMilestoneByTicketID(ticket.getId())
+                    .getAssignedDevs().contains(user.getUsername())) {
+                continue;
+            }
+
+            ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
+            ticketsArray.add(ticketNode);
+        }
+    }
+
+    private void addReporterTickets(final ArrayNode ticketsArray, final AppCenter appCenter,
+                                    final String username) {
+        for (Ticket ticket : appCenter.getTickets()) {
+            if (!ticket.getReportedBy().equals(username)) {
+                continue;
+            }
+
+            ObjectNode ticketNode = CommandHelper.createTicketNode(ticket);
+            ticketsArray.add(ticketNode);
+        }
     }
 }

@@ -11,8 +11,6 @@ public class Manager extends User {
     private String hireDate;
     private List<String> subordinates;
 
-    public Manager() { }
-
     public Manager(final String username,
                    final String email,
                    final String role,

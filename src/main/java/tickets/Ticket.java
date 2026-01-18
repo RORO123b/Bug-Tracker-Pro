@@ -71,41 +71,72 @@ public abstract class Ticket {
             daysToResolve = (double) ChronoUnit.DAYS.between(assignedAt, timestamp) + 1;
         } else if (status == TicketStatus.RESOLVED) {
             status = TicketStatus.CLOSED;
-            boolean ok = true;
-            AppCenter appCenter = AppCenter.getInstance();
-            Milestone milestone = appCenter.getMilestoneByTicketID(id);
-            for (Ticket ticket : milestone.getTickets()) {
-                if (ticket.getStatus() != TicketStatus.CLOSED) {
-                    ok = false;
-                }
+            checkAndCompleteMilestone(timestamp);
+        }
+    }
+
+    private void checkAndCompleteMilestone(final LocalDate timestamp) {
+        AppCenter appCenter = AppCenter.getInstance();
+        Milestone milestone = appCenter.getMilestoneByTicketID(id);
+        if (!allTicketsClosed(milestone)) {
+            return;
+        }
+        milestone.setStatus("COMPLETED");
+        unblockDependentMilestones(milestone, timestamp, appCenter);
+    }
+
+    private boolean allTicketsClosed(final Milestone milestone) {
+        for (Ticket ticket : milestone.getTickets()) {
+            if (ticket.getStatus() != TicketStatus.CLOSED) {
+                return false;
             }
-            if (ok) {
-                milestone.setStatus("COMPLETED");
-                for (Milestone blockedMilestone : milestone.getBlockingFor()) {
-                    blockedMilestone.setBlocked(false);
-                    blockedMilestone.setStatus("ACTIVE");
-                    blockedMilestone.setLastDayUpdated(timestamp);
-                    for (String dev : blockedMilestone.getAssignedDevs()) {
-                        Developer developer =
-                                (Developer) appCenter.getUserByUsername(dev);
-                        if (blockedMilestone.getDueDate().isBefore(timestamp)) {
-                            developer.addNotification("Milestone "
-                                    + blockedMilestone.getName()
-                                    + " was unblocked after due date. "
-                                    + "All active tickets are now CRITICAL.");
-                            for (Ticket t : blockedMilestone.getTickets()) {
-                                if (t.getStatus() != TicketStatus.CLOSED) {
-                                    t.setBusinessPriority(BusinessPriority.CRITICAL);
-                                }
-                            }
-                        } else {
-                            developer.addNotification("Milestone "
-                                    + blockedMilestone.getName()
-                                    + " is now unblocked as ticket " + id
-                                    + " has been CLOSED.");
-                        }
-                    }
-                }
+        }
+        return true;
+    }
+
+    private void unblockDependentMilestones(final Milestone milestone, 
+                                            final LocalDate timestamp,
+                                            final AppCenter appCenter) {
+        for (Milestone blockedMilestone : milestone.getBlockingFor()) {
+            blockedMilestone.setBlocked(false);
+            blockedMilestone.setStatus("ACTIVE");
+            blockedMilestone.setLastDayUpdated(timestamp);
+                notifyDevelopersAboutUnblock(blockedMilestone, timestamp, appCenter);
+        }
+    }
+
+    private void notifyDevelopersAboutUnblock(final Milestone blockedMilestone,
+                                              final LocalDate timestamp,
+                                              final AppCenter appCenter) {
+        boolean isOverdue = blockedMilestone.getDueDate().isBefore(timestamp);
+        for (String dev : blockedMilestone.getAssignedDevs()) {
+            Developer developer = (Developer) appCenter.getUserByUsername(dev);
+                if (isOverdue) {
+                notifyOverdueMilestone(developer, blockedMilestone);
+                setTicketsToCritical(blockedMilestone);
+            } else {
+                notifyUnblockedMilestone(developer, blockedMilestone);
+            }
+        }
+    }
+
+    private void notifyOverdueMilestone(final Developer developer, 
+                                        final Milestone blockedMilestone) {
+        developer.addNotification("Milestone " + blockedMilestone.getName()
+                + " was unblocked after due date. "
+                + "All active tickets are now CRITICAL.");
+    }
+
+    private void notifyUnblockedMilestone(final Developer developer,
+                                          final Milestone blockedMilestone) {
+        developer.addNotification("Milestone " + blockedMilestone.getName()
+                + " is now unblocked as ticket " + id + " has been CLOSED.");
+    }
+
+    private void setTicketsToCritical(final Milestone blockedMilestone) {
+        for (Ticket ticket : blockedMilestone.getTickets()) {
+            if (ticket.getStatus() != TicketStatus.CLOSED) {
+                ticket.setBusinessPriority(BusinessPriority.CRITICAL);
             }
         }
     }

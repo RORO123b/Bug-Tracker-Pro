@@ -17,16 +17,11 @@ public final class KeywordFilterStrategy implements FilterStrategy<Ticket> {
         }
 
         String title = ticket.getTitle().toLowerCase();
-        String description = (ticket.getDescription() != null)
-                ? ticket.getDescription().toLowerCase() : "";
 
         Set<String> found = new TreeSet<>();
         for (String kw : keywords) {
             String lowerKw = kw.toLowerCase();
             String matchingWord = findMatchingWord(title, lowerKw);
-            if (matchingWord == null) {
-                matchingWord = findMatchingWord(description, lowerKw);
-            }
             if (matchingWord != null) {
                 found.add(matchingWord);
             }

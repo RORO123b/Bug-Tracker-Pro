@@ -96,8 +96,8 @@ public final class Milestone {
         int totalDays = (int) ChronoUnit.DAYS.between(createdAt, nowDate);
         int lastUpdateDays = (int) ChronoUnit.DAYS.between(createdAt, lastDayUpdated);
 
-        int currentInterval = (int) (totalDays / BUSINESS_PRIORITY_UPDATE_INTERVAL);
-        int lastInterval = (int) (lastUpdateDays / BUSINESS_PRIORITY_UPDATE_INTERVAL);
+        int currentInterval = totalDays / BUSINESS_PRIORITY_UPDATE_INTERVAL;
+        int lastInterval = lastUpdateDays / BUSINESS_PRIORITY_UPDATE_INTERVAL;
 
         for (int i = lastInterval + 1; i <= currentInterval; i++) {
             for (Ticket ticket : tickets) {
@@ -107,22 +107,45 @@ public final class Milestone {
                 }
             }
         }
+
         if (currentInterval > lastInterval) {
             lastDayUpdated = nowDate;
         }
-        if (((int) ChronoUnit.DAYS.between(nowDate, dueDate)) == 1 && !dueTomorrowNotified) {
-            dueTomorrowNotified = true;
-            for (String dev : assignedDevs) {
-                Developer developer = (Developer) appCenter.getUserByUsername(dev);
-                developer.addNotification("Milestone " + name
-                        + " is due tomorrow. All unresolved tickets are now CRITICAL.");
+
+        checkDueTomorrowAndNotify(nowDate, appCenter);
+    }
+
+    private void checkDueTomorrowAndNotify(final LocalDate nowDate, final AppCenter appCenter) {
+        int daysUntilDue = (int) ChronoUnit.DAYS.between(nowDate, dueDate);
+
+        if (daysUntilDue != 1 || dueTomorrowNotified) {
+            return;
+        }
+
+        dueTomorrowNotified = true;
+        notifyDevelopersAboutDueDate();
+        setAllTicketsToCritical(appCenter, nowDate);
+    }
+
+    private void notifyDevelopersAboutDueDate() {
+        AppCenter appCenter = AppCenter.getInstance();
+        String message = "Milestone " + name
+                + " is due tomorrow. All unresolved tickets are now CRITICAL.";
+
+        for (String dev : assignedDevs) {
+            Developer developer = (Developer) appCenter.getUserByUsername(dev);
+            developer.addNotification(message);
+        }
+    }
+
+    private void setAllTicketsToCritical(final AppCenter appCenter, final LocalDate nowDate) {
+        for (Ticket ticket : tickets) {
+            if (ticket.getStatus() == TicketStatus.CLOSED) {
+                continue;
             }
-            for (Ticket ticket : tickets) {
-                if (ticket.getStatus() != TicketStatus.CLOSED) {
-                    ticket.setBusinessPriority(BusinessPriority.CRITICAL);
-                    checkAndRemoveFromDev(ticket, appCenter, nowDate);
-                }
-            }
+
+            ticket.setBusinessPriority(BusinessPriority.CRITICAL);
+            checkAndRemoveFromDev(ticket, appCenter, nowDate);
         }
     }
 

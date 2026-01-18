@@ -1,9 +1,7 @@
 package commands.search;
 
-import enums.TicketStatus;
 import fileio.FilterInput;
 import main.AppCenter;
-import milestones.Milestone;
 import tickets.Ticket;
 import users.Developer;
 import users.User;
@@ -21,15 +19,7 @@ public final class TicketSearchTypeStrategy implements SearchTypeStrategy {
             initialPool.addAll(appCenter.getTickets());
         } else if (requester.getRole().equals("DEVELOPER")) {
             Developer dev = (Developer) requester;
-            for (Milestone milestone : appCenter.getMilestones()) {
-                if (milestone.getAssignedDevs().contains(dev.getUsername())) {
-                    for (Ticket ticket : milestone.getTickets()) {
-                        if (ticket.getStatus() == TicketStatus.OPEN) {
-                            initialPool.add(ticket);
-                        }
-                    }
-                }
-            }
+            initialPool.addAll(appCenter.getOpenTicketsForDeveloper(dev));
         }
 
         Developer currentDev = null;

@@ -17,9 +17,6 @@ public final class ChangeStatusCommand implements Command {
         try {
             AppCenter appCenter = AppCenter.getInstance();
             Ticket ticket = appCenter.getTicketById(command.getTicketID());
-            if (ticket == null) {
-                return null;
-            }
             Developer dev = (Developer) appCenter.getUserByUsername(command.getUsername());
 
             if (!dev.getAssignedTickets().contains(ticket)) {
@@ -29,6 +26,7 @@ public final class ChangeStatusCommand implements Command {
             if (ticket.getStatus() == TicketStatus.CLOSED) {
                 return null;
             }
+
             ticket.getHistory().add(new ActionBuilder()
                     .action("STATUS_CHANGED")
                     .oldStatus(ticket.getStatus().toString())

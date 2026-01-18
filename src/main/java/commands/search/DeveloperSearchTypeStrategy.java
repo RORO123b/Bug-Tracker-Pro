@@ -18,7 +18,7 @@ public final class DeveloperSearchTypeStrategy implements SearchTypeStrategy {
      */
     @Override
     public List<Developer> execute(final User requester, final FilterInput filters) {
-        if (!"MANAGER".equals(requester.getRole())) {
+        if (!requester.getRole().equals("MANAGER")) {
             return new ArrayList<>();
         }
 
