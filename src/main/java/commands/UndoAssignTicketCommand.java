@@ -40,11 +40,8 @@ public final class UndoAssignTicketCommand implements Command {
                     .build());
             return null;
         } catch (IllegalStateException e) {
-            ObjectNode error = mapper.createObjectNode();
-            error.put("command", command.getCommand());
-            error.put("username", command.getUsername());
-            error.put("timestamp", command.getTimestamp().toString());
-            error.put("error", e.getMessage());
+            ObjectNode error = CommandHelper.createErrorNode(mapper, command,
+                    e.getMessage());
             return error;
         }
     }

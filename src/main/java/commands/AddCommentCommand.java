@@ -48,11 +48,8 @@ public final class AddCommentCommand implements Command {
             ticket.getComments().add(new Comment(user.getUsername(), command.getComment(),
                     command.getTimestamp()));
         } catch (IllegalArgumentException e) {
-            ObjectNode error = mapper.createObjectNode();
-            error.put("command", command.getCommand());
-            error.put("username", command.getUsername());
-            error.put("timestamp", command.getTimestamp().toString());
-            error.put("error", e.getMessage());
+            ObjectNode error = CommandHelper.createErrorNode(mapper, command,
+                    e.getMessage());
             return error;
         }
         return null;

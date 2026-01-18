@@ -86,11 +86,8 @@ public final class ReportTicketCommand implements Command {
             appCenter.getTickets().add(ticket);
             return null;
         } catch (IllegalStateException | IllegalArgumentException e) {
-            ObjectNode error = mapper.createObjectNode();
-            error.put("command", command.getCommand());
-            error.put("username", command.getUsername());
-            error.put("timestamp", command.getTimestamp().toString());
-            error.put("error", e.getMessage());
+            ObjectNode error = CommandHelper.createErrorNode(mapper, command,
+                    e.getMessage());
             return error;
         }
     }

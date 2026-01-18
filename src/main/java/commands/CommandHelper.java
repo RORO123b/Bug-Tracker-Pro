@@ -261,4 +261,22 @@ public final class CommandHelper {
         return actionNode;
     }
 
+    /**
+     * Creates an error ObjectNode.
+     * @param mapper ObjectMapper
+     * @param command CommandInput
+     * @param message String
+     * @return ObjectNode for error
+     */
+    public static ObjectNode createErrorNode(final ObjectMapper mapper,
+                                             final CommandInput command,
+                                             final String message) {
+        ObjectNode error = mapper.createObjectNode();
+        error.put("command", command.getCommand());
+        error.put("username", command.getUsername());
+        error.put("timestamp", command.getTimestamp().toString());
+        error.put("error", message);
+        return error;
+    }
+
 }
